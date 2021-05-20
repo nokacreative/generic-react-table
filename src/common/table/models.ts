@@ -87,18 +87,11 @@ export interface RelationalColumn<T> extends TableColumnBaseWithPath<T> {
   filter?: CustomFilter<T>
 }
 
-interface NumericColumnBase<T> extends TableColumnBase<T> {
+interface NumericColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.NUMBER | DataType.MONEY
   filterType?: Exclude<FilterType, FilterType.PARTIAL_MATCH>
 }
 
-export type NumericColumn<T> = NumericColumnBase<T> &
-  (
-    | {
-        render: (data: T) => number
-      }
-    | { propertyPath: keyof T }
-  )
 export type TableColumn<T> =
   | TextColumn<T>
   | RichTextColumn<T>
