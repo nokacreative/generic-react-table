@@ -1,6 +1,6 @@
 A generic table written in React and Typescript with many features.
 
-View the demo [here](https://nokacreative.github.io/noka-react-generic-table-demo/). The demo's repository can also be found [here](https://github.com/nokacreative/noka-generic-react-table-demo).
+View the demo [here](https://nokacreative.github.io/noka-generic-react-table-demo/). The demo's repository can also be found [here](https://github.com/nokacreative/noka-generic-react-table-demo).
 
 # Installation
 
@@ -50,7 +50,7 @@ const App = () => (
 
 ## Code Samples
 
-Gives an overview of the code used in the [demo](https://nokacreative.github.io/noka-react-generic-table-demo/). For the full code, see its [repository](https://github.com/nokacreative/noka-generic-react-table-demo).
+Gives an overview of the code used in the [demo](https://nokacreative.github.io/noka-generic-react-table-demo/). For the full code, see its [repository](https://github.com/nokacreative/noka-generic-react-table-demo).
 
 All custom types that will be shown in these examples are described in-depth at the bottom of this document, in the "Comprehensive API reference" section.
 
