@@ -5,13 +5,13 @@ View the demo [here](https://nokacreative.github.io/noka-generic-react-table-dem
 # Installation
 
 ```
-npm i @noka/generic-react-table
+npm i @nokacreative/generic-react-table
 ```
 
 or
 
 ```
-yarn add @noka/generic-react-table
+yarn add @nokacreative/generic-react-table
 ```
 
 # Features

@@ -1,5 +1,5 @@
 {
-  "name": "@noka/generic-react-table",
+  "name": "@nokacreative/generic-react-table",
   "description": "A generic table made in react.",
   "version": "1.0.0",
   "private": false,
@@ -7,7 +7,7 @@
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
   "keywords": [
-    "noka",
+    "nokacreative",
     "react",
     "table",
     "generic"
