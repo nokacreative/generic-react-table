@@ -1,7 +1,7 @@
 {
   "name": "@nokacreative/generic-react-table",
   "description": "A generic table made in react.",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": false,
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -15,9 +15,9 @@
   "repository": "nokacreative/generic-react-table",
   "license": "MIT",
   "dependencies": {
-    "react-scripts": "4.0.3",
     "node-sass": "^5.0.0",
     "react-datepicker": "^3.8.0",
+    "react-scripts": "4.0.3",
     "sanitize-html-react": "^1.13.0"
   },
   "peerDependencies": {
@@ -64,5 +64,7 @@
       "last 1 safari version"
     ]
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }
