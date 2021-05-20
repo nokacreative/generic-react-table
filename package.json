@@ -1,7 +1,7 @@
 {
   "name": "@nokacreative/generic-react-table",
   "description": "A generic table made in react.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
@@ -12,7 +12,7 @@
     "table",
     "generic"
   ],
-  "repository": "nokacreative/noka-generic-react-table",
+  "repository": "nokacreative/generic-react-table",
   "license": "MIT",
   "dependencies": {
     "react-scripts": "4.0.3",
