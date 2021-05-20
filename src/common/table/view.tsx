@@ -116,7 +116,7 @@ export function Table<T>(props: Props<T>) {
         className="table-message"
         style={{ gridColumn: `1 / ${orderedColumns.length + 1}` }}
       >
-        {message}.
+        {message}
       </td>
     </tr>
   )
@@ -284,7 +284,7 @@ export function Table<T>(props: Props<T>) {
   const showTableActions = props.isSearchable || props.isFilterable
 
   return (
-    <div className="table-wrapper">
+    <div id={props.id} className={`table-wrapper noka-table-colors ${props.className || ''}`}>
       {props.isLoading && (
         <div className="table-loader">{props.loader || 'Loading...'}</div>
       )}

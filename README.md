@@ -325,6 +325,33 @@ Works the same way as server-side paging and sorting; with the properties `useSe
 />
 ```
 
+### Style overriding
+
+![Alternate colours](https://user-images.githubusercontent.com/6403562/119046159-5b1a2e80-b98a-11eb-8ba4-fbf89a3d610f.png)
+
+All colours are defined as CSS variables and scoped under the `noka-table-colors` class. By simply overriding that class's variables, the table's colours can be customized to your liking; refer to the last section of the API reference to see all availble variables.
+
+Variables can be overriden via directly setting them in the aforementioned class, which will change all tables globally:
+
+```
+.noka-table-colors {
+  --headerCellBg: #e2e2e2;
+  --headerCellText: #181818;
+  --active: #00cae4;
+}
+```
+
+Or by adding an ID (or extra `className`) to the table, and scoping the colours there:
+
+```
+<Table id="my-table" {...} />
+
+#my-table {
+  --cellBg: #181818;
+  --alternateCellBg: black;
+}
+```
+
 # Comprehensive API reference
 
 ## Common enums
@@ -509,3 +536,29 @@ type | `CustomFilterType.DROPDOWN` | Y | Tells the compiler that you want to use
 options | `DropdownOption[]` | Y | The options to pass into the dropdown. `DropwonOption` is defined as `{ text: string, value: any, render?: () => ReactNode }`.
 matcher | (value: any, row: T, relatedDataItem?: any) => boolean | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one.
 isMultiple | boolean | N | Whether or not multiple selections can be made for this filter.
+
+## Style overriding - CSS colour variables
+
+### Common
+
+Variable | Default value | Description
+--- | --- | ---
+--text | <span style="color: #505050">#505050</span> | The colour of all normal text elements. Used in non-header cells, icons, dropdowns, and pagination buttons.
+--headerText | <span style="color: #777777">#777777</span> | The colour of table headers and input-clear icons.
+--links | <span style="color: #1abc9c">#1abc9c</span> | Used for actual links, and any element that behaves as one (ex. the pagination buttons/links, on hover).
+--textAgainstNoBg | Whatever `text` is | Anything that is rendered against a transparent background, ex. the header icons, pagination buttons, etc.
+--inputBg | `cellBg` | The background of any input.
+--inputText | `text` | The text colour of any input.
+--active | <span style="color: #ff9933">#ff9933</span> | The colour of any active or focused elements.
+
+### Table
+
+Variable | Default value | Description
+--- | --- | ---
+--cellBg | <span style="color: white; background: black;">white</span> | The background of a normal cell/row.
+--alternateCellBg | <span style="color: #ffd6ad; background: black;">#f7f5f5</span> | The background of the alternating rows.
+--headerCellBg | <span style="color: #bc451a">#bc451a</span> | The background of the header cells.
+--headerCellText | <span style="color: white; background: black;">white</span>  | The text colour of the header cells.
+--rowHover | <span style="color: #ffd6ad">#ffd6ad</span> | Used when a selectable row is hovered.
+--linksDark | <span style="color: #008066">#008066</span> | A darker version of `--links`, used exclusively when a selectable row is hovered, as the colours of the row hover may cause links to look too faint.
+--separator | <span style="color: #b39f98">#b39f98</span> | The colour of the table borders.

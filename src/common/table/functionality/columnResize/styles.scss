@@ -1,5 +1,3 @@
-@import '../../vars.scss';
-
 $size: 6px;
 
 .column-resizer {
@@ -15,6 +13,6 @@ $size: 6px;
 
   &:hover,
   &.active {
-    background: $activeColor;
+    background: var(--active);
   }
 }

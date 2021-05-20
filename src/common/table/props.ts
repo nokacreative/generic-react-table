@@ -20,6 +20,8 @@ type BaseProps<T> = {
   searchDebounceMilis?: number
   /** Should only be used in tandem with a server */
   totalNumResults?: number
+  id?: string
+  className?: string
 }
 
 type PagingProps =
