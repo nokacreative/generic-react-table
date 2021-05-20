@@ -256,7 +256,7 @@ export function Table<T>(props: Props<T>) {
             Array.from({
               length: Math.min(props.minNumRows, pageSize) - dataInCurrentPage.length,
             }).map((_, rowIndex: number) => (
-              <tr key={`table-emptyRow-${rowIndex}`}>
+              <tr key={`table-emptyRow-${rowIndex}`} className="table-row">
                 {columns.map((_, columnIndex) => (
                   <td
                     className="table-cell"

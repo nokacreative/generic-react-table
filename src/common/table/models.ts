@@ -87,7 +87,7 @@ export interface RelationalColumn<T> extends TableColumnBaseWithPath<T> {
   filter?: CustomFilter<T>
 }
 
-interface NumericColumn<T> extends TableColumnBaseWithPath<T> {
+export interface NumericColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.NUMBER | DataType.MONEY
   filterType?: Exclude<FilterType, FilterType.PARTIAL_MATCH>
 }
