@@ -1,0 +1,77 @@
+@import 'assets/vars.scss';
+
+.dropdown-wrapper {
+  position: relative;
+
+  .dropdown-input {
+    padding-right: 17px;
+
+    &.withClearButton {
+      padding-right: 26px;
+    }
+  }
+
+  &.active {
+    .dropdown-input {
+      border-color: $tertiary;
+    }
+
+    & > .dropdown-arrow {
+      transform: none;
+      top: 10px;
+    }
+  }
+
+  & > .dropdown-clear {
+    position: absolute;
+    color: $text;
+    right: 15px;
+    font-weight: 500;
+    font-size: 1.2em;
+    cursor: default;
+  }
+
+  & > .dropdown-arrow {
+    @include triangle($text, 10px);
+    transform: rotate(180deg);
+    position: absolute;
+    top: 12px;
+    right: 4px;
+    pointer-events: none;
+
+    &.disabled {
+      opacity: 0.5;
+    }
+  }
+
+  .options-container {
+    border: 1px solid $tertiary;
+    overflow-y: auto;
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    background: white;
+    margin-top: -1px;
+    z-index: 1;
+
+    .pinned-value-separator {
+      border-bottom: 1px dashed $separatorColor;
+    }
+  }
+
+  .dropdown-option {
+    padding: 0.1em 0.5em;
+    font-weight: 400;
+    color: $text;
+
+    &:hover,
+    &.selected,
+    &.hovered {
+      background: $tertiary;
+    }
+  }
+
+  &.unfilterable .dropdown-input {
+    cursor: default;
+  }
+}

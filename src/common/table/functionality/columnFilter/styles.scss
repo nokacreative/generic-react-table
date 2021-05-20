@@ -1,0 +1,138 @@
+@import '../../vars.scss';
+
+@mixin popped {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 2 !important;
+}
+
+.table-column-filter {
+  margin-top: 0.5rem;
+
+  input {
+    font-size: 0.85rem;
+
+    &[type='number'] {
+      text-align: inherit;
+    }
+  }
+
+  .dropdown-wrapper.active.popped {
+    .dropdown-input {
+      z-index: 2;
+    }
+
+    .options-container {
+      @include popped;
+      width: auto;
+      max-height: 90vh;
+      cursor: default;
+      min-width: 120px;
+    }
+  }
+
+  .dropdown-option {
+    font-size: 0.85rem;
+    padding: 0 5px;
+  }
+
+  .money {
+    position: relative;
+
+    &::before {
+      content: '$';
+      color: $header;
+      position: absolute;
+      font-size: 0.8em;
+      font-weight: 300;
+      left: 6px;
+      top: 1px;
+    }
+
+    input {
+      padding-left: 17px;
+    }
+  }
+
+  .react-datepicker__input-container {
+    input {
+      padding-right: 19px;
+
+      &.react-datepicker-ignore-onclickoutside {
+        z-index: 2;
+        position: relative;
+      }
+    }
+  }
+}
+
+.table-ranged-filter-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -2px;
+
+  & > div {
+    position: relative;
+    margin: 2px;
+    flex: 1;
+    flex-basis: 50px;
+    max-width: 100px;
+  }
+
+  input {
+    width: 100%;
+  }
+
+  &.date-filter-wrapper > div {
+    max-width: 200px;
+    flex-basis: 200px;
+  }
+}
+
+.table-color-filter-preview {
+  $size: 15px;
+  width: $size;
+  height: $size;
+  border-radius: $size;
+  display: inline-block;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.react-datepicker__close-icon {
+  &::after {
+    background: none !important;
+    color: $header !important;
+    font-size: 1em !important;
+    line-height: unset !important;
+    display: block !important;
+    position: absolute;
+    right: 0;
+    top: 4px;
+    cursor: default;
+
+    &:hover {
+      color: $text;
+    }
+  }
+}
+
+.table-date-picker-popup {
+  @include popped;
+
+  .react-datepicker__triangle {
+    display: none !important;
+  }
+}
+
+.table-popup-filter-backdrop {
+  background-color: rgba(0, 0, 0, 0.3);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+}

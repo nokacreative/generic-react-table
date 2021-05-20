@@ -1,0 +1,81 @@
+@import 'assets/vars.scss';
+@import '../../vars.scss';
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+
+  & > * {
+    white-space: nowrap;
+  }
+
+  .table-paging-buttons-container {
+    margin: 0 1rem;
+  }
+
+  .table-page-nav-button {
+    border: none;
+    font-weight: 600;
+    padding: 0.5rem;
+    min-width: 31px;
+    font-size: 0.8rem;
+    background: none;
+    color: $text;
+    cursor: pointer;
+
+    &:not(:disabled):hover {
+      color: $primary;
+    }
+
+    &.active {
+      background: $headerColor;
+      color: white;
+      font-weight: 800;
+      cursor: default;
+    }
+
+    &:disabled:not(.active) {
+      opacity: 0.6;
+      cursor: default;
+    }
+  }
+
+  .ellipsis {
+    margin: 0 0.5rem;
+  }
+
+  .dropdown-wrapper {
+    width: 60px;
+    display: inline-block;
+    margin-left: 0.5rem;
+    color: inherit;
+
+    input {
+      padding: 0.5rem;
+      border: 1px solid $separatorColor;
+    }
+
+    .dropdown-option {
+      font-size: 0.86em;
+    }
+  }
+
+  @media all and (max-width: 585px) {
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: -0.5rem;
+
+    & > * {
+      margin-top: 0.5rem !important;
+    }
+
+    & > label:first-child {
+      margin-right: 1rem;
+    }
+
+    .table-paging-buttons-container {
+      order: 2;
+      margin: 0;
+    }
+  }
+}

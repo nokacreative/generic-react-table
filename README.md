@@ -1,70 +1,141 @@
-# Getting Started with Create React App
+A generic table written in React and Typescript with many features.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+View the demo [here](https://nokacreative.github.io/noka-react-generic-table-demo/).
 
-## Available Scripts
+# Installation
 
-In the project directory, you can run:
+```
+npm i @noka/generic-react-table
+```
 
-### `yarn start`
+or
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```
+yarn add @noka/generic-react-table
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+# Features
 
-### `yarn test`
+- Column sorting, resizing, reordering, and pinning
+- Sorting
+- Paging
+- Searching
+- Filtering
+- Row selection (single and multiple)
+- Integration with a server side
+- Automatic handling (rendering, sort calculations, filter generation, etc.) of data types such as plain and rich text, numbers, dates, money, colours
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# Usage
 
-### `yarn build`
+## Overview
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+1. Define your columns
+2. Plug them and your data into `<Table>`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```
+import { Table } from '@noka/generic-react-table'
+import { data } from './database'
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+const columns: TableColumn<UserModel>[] => [
+  {
+    headerText: 'Column 1',
+    type: DataType.PLAIN_TEXT,
+  }
+]
 
-### `yarn eject`
+const App = () => (
+  <Table columns={columns} data={data} />
+)
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Column types and properties
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Data (Column) Types
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Enum Name | Description
+--- | ---
+PLAIN_TEXT | Any non-formatted string.
+RICH_TEXT | Any string with HTML formatting. Note that only simple tags (such as `i`, `b`, `br`, etc.) are allowed.
+DATE | Any date. It expects a time value, eg. the result of `Date.getTime()`.
+NUMBER | Any numeric value.
+COLOR | Any valid CSS colour value, such as `blue`, `#0000FF`, etc.
+MONEY | Any plain numeric value. It is automatically formatted when rendered.
+RELATION | A value that is used in another dataset. Ex. Users in a system with groups may have a `groupId` property. When this data type is used for a column, the corresponding `Group` object is automatically retrieved, and can be rendered however you want.
+CUSTOM | Anything that does not fall into the above categories.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+There's also a self-explanatory `SortDirection` enum that is referenced below, with values of `ASCENDING` and `DESCENDING`.
 
-## Learn More
+### Common properties
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Property | type | Required | Description
+--- | --- | --- | ---
+type | `DataType` | Y | The type of the column.
+headerText | string | Y | The text that is displayed in the column's header.
+defaultWidth | string | N | How wide you want the column to be. Can be in px, or take in any [Grid Layout value](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns).
+isResizable | boolean | N | Whether or not the column can be resized.
+isSortable | boolean | N | Whether or not the column can be sorted.
+sortAccessor | (row: T) => any | N | All column types (aside from `CUSTOM` and `RELATION`) sort based on their dataType by default. You can override this behaviour by returning the data you would instead like to sort by.
+defaultSortDirection | `SortDirection` | N | The direction to sort by, by default.
+searchMatcher | (row: T, searchTerm: string) => boolean | N | Like with the sortAccessor, all non-custom and non-relation columns have their own code for determining whether or not its data includes the search term. You can override this behaviour (or define it for custom/relational columns) with this function.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Plain text columns
 
-### Code Splitting
+Property | type | Required | Description
+--- | --- | --- | ---
+propertyPath | string | Where the property lies in your model. Ex. if you have `UserModel { id: string }`, and you want an ID column, you would write `propertyPath: 'id'`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Code Samples
 
-### Analyzing the Bundle Size
+### Basic table
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+![Basic Table](https://user-images.githubusercontent.com/6403562/118925195-5020b900-b90c-11eb-8be6-e6c09f98bad9.png)
 
-### Making a Progressive Web App
+Below are the definitions used for this particular sample. The `CUSTOM` and `RELATION` data types give you a `render()` function for you to decide how you want to render the cell, while all other data types automatically render their contents based on the given `propertyPath`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+```
+import { Table, TableColumn, DataType } from '@noka/generic-react-table'
+import { database } from './database'
 
-### Advanced Configuration
+interface UserModel {
+  id: string
+  userName: string
+  displayName: string
+  dateJoined: number
+  groupId: string
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+const columns = (groups: GroupModel[]): TableColumn<UserModel>[] => [
+  {
+    headerText: 'User Name',
+    type: DataType.CUSTOM,
+    render: (user: UserModel) => (
+      <Link to={ROUTES.userDetails(user.id)}>{user.userName}</Link>
+    ),
+  },
+  {
+    propertyPath: 'displayName',
+    headerText: 'Display Name',
+    type: DataType.PLAIN_TEXT,
+  },
+  {
+    propertyPath: 'groupId',
+    headerText: 'Group',
+    type: DataType.RELATION,
+    relatedDataList: groups,
+    render: (relatedGroup: GroupModel) => (
+      <Link to={ROUTES.groupDetails(relatedGroup.id)}>{relatedGroup.name}</Link>
+    ),
+  },
+  {
+    propertyPath: 'dateJoined',
+    headerText: 'Date Joined',
+    type: DataType.DATE,
+    showTime: true,
+    defaultWidth: 'max-content',
+  },
+]
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+const App = () => (
+  <Table columns={columns(database.groups)} data={database.users} />
+)
+```

@@ -1,21 +1,50 @@
 {
-  "name": "generic-react-table",
-  "version": "0.1.0",
-  "private": true,
+  "name": "@noka/generic-react-table",
+  "description": "A generic table made in react.",
+  "version": "1.0.0",
+  "private": false,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "keywords": [
+    "noka",
+    "react",
+    "table",
+    "generic"
+  ],
+  "repository": "nokacreative/noka-generic-react-table",
+  "license": "MIT",
   "dependencies": {
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "web-vitals": "^1.0.1"
+    "node-sass": "^5.0.0",
+    "react-datepicker": "^3.8.0",
+    "sanitize-html-react": "^1.13.0"
+  },
+  "peerDependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^15.3.0",
+    "@types/react": "^17.0.0",
+    "@types/react-datepicker": "^3.1.8",
+    "@types/react-dom": "^17.0.0",
+    "@typescript-eslint/eslint-plugin": "^4.23.0",
+    "@typescript-eslint/parser": "^4.23.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^7.26.0",
+    "eslint-plugin-react": "^7.23.2",
+    "rimraf": "^3.0.2",
+    "typescript": "^4.1.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "yarn clean && yarn build:esm && yarn build:cjs && yarn copy:esm && yarn copy:cjs",
+    "build:esm": "tsc",
+    "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+    "clean": "rimraf dist/",
+    "copy:esm": "copyfiles -u 1 src/**/*.svg src/**/*.scss src/common/**/*.scss src/common/table/functionality/**/*.scss dist/esm",
+    "copy:cjs": "copyfiles -u 1 src/**/*.svg src/**/*.scss src/common/**/*.scss src/common/table/functionality/**/*.scss dist/cjs",
+    "check": "tsc --noEmit true"
   },
   "eslintConfig": {
     "extends": [
@@ -34,5 +63,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "files": ["dist"]
 }

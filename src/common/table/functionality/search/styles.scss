@@ -1,0 +1,52 @@
+@import '../../vars.scss';
+
+.table-action-search {
+  transition: all 0.3s;
+  overflow: hidden;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  &.active {
+    width: 100%;
+
+    .icon {
+      z-index: 2;
+    }
+
+    .table-search-input {
+      margin-left: -16px;
+      width: 100%;
+    }
+
+    .table-search-clear {
+      font-size: 2rem;
+      position: absolute;
+      right: 0;
+      color: $header;
+      cursor: default;
+
+      &:hover {
+        color: $text;
+      }
+    }
+  }
+
+  .table-search-input {
+    border: none;
+    border-bottom: 3px solid $primary;
+    background: none;
+    padding: 0.2rem;
+    padding-left: 24px;
+    padding-right: 20px;
+    font-size: inherit;
+    color: inherit;
+
+    &:focus,
+    &:active {
+      outline: none;
+      border-bottom-color: $activeColor;
+    }
+  }
+}

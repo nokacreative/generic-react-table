@@ -1,0 +1,1 @@
+export type SvgComponent = React.SVGProps<SVGSVGElement>
