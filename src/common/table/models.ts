@@ -124,6 +124,13 @@ export type DateFormatter = (
 ) => string
 export type MoneyFormatter = (value: number) => string
 
+export interface MessageOverrides {
+  noData?: (pluralEntityName?: string) => string
+  noFilterResults?: string
+  noSearchResults?: string
+  filters?: FilterMessageOverrides
+}
+
 export interface FormatterOverrides {
   date?: DateFormatter
   money?: MoneyFormatter

@@ -1,6 +1,7 @@
 import {
   FilterMessageOverrides,
   FormatterOverrides,
+  MessageOverrides,
   SortingRule,
   TableColumn,
 } from './models'
@@ -27,12 +28,7 @@ type BaseProps<T> = {
   totalNumResults?: number
   id?: string
   className?: string
-  messageOverrides?: {
-    noData?: (pluralEntityName?: string) => string
-    noFilterResults?: string
-    noSearchResults?: string
-    filters?: FilterMessageOverrides
-  }
+  messageOverrides?: MessageOverrides
   formatterOverrides?: FormatterOverrides
 }
 
