@@ -1,10 +1,4 @@
-import {
-  FilterMessageOverrides,
-  FormatterOverrides,
-  MessageOverrides,
-  SortingRule,
-  TableColumn,
-} from './models'
+import { FormatterOverrides, MessageOverrides, SortingRule, TableColumn } from './models'
 import { FilterMap } from './functionality/columnFilter'
 import { DataType } from './enum'
 

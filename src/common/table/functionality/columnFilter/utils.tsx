@@ -343,6 +343,7 @@ function generateDropdownFilter<T>(
   isMultiple?: boolean
 ) {
   const shouldPop = options.length >= 5
+  const placeholderOverrides = constantArgs.messageOverrides?.placeholders
   return (
     <Dropdown
       options={options}
@@ -359,7 +360,11 @@ function generateDropdownFilter<T>(
               addOrUpdateFilters(options ? options.map((o) => o.value) : '', constantArgs)
       }
       id={`table-color-filter-dropdown-${id}`}
-      placeholder={isMultiple ? 'Multiple' : 'Filter'}
+      placeholder={
+        isMultiple
+          ? placeholderOverrides?.dropdownMultiple || 'Multiple'
+          : placeholderOverrides?.dropdownSingle || 'Filter'
+      }
       saveSelection
       showClearButton
       isMultiple={isMultiple}

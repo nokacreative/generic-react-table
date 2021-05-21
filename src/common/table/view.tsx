@@ -62,7 +62,8 @@ export function Table<T>(props: Props<T>) {
     props.searchDebounceMilis || DEFAULT_DEBOUNCE_MILIS,
     props.isSearchable && props.useServerSideSearching && props.onSearch,
     cachedRelatedDataItems.current,
-    props.formatterOverrides?.date
+    props.formatterOverrides?.date,
+    props.messageOverrides?.searchTogglerButton
   )
 
   const { filterJsx, columnFilters, filteredData, filtersExist, showFilterBackdrop } =
@@ -90,26 +91,52 @@ export function Table<T>(props: Props<T>) {
   const canSelectRows = props.onRowSelected !== undefined
   const [selectedRows, setSelectedRows] = useState<T[]>([])
 
+  const filteredNumResults = (() => {
+    if (
+      props.useServerSideSearching ||
+      (props.isFilterable && props.useServerSideFiltering)
+    ) {
+      return props.totalNumResults || 0
+    } else if ((props.showFilteredResultCount && filtersExist) || searchTermExists) {
+      return filteredData.length
+    } else {
+      return props.data.length
+    }
+  })()
+
+  const showTableActions = props.isSearchable || props.isFilterable
+
   const resultsText = (() => {
     if (!props.showResultCount) {
       return undefined
     }
     const totalNumResults = props.totalNumResults || props.data.length
-    let filteredNumResults = 0
-    if (
-      props.useServerSideSearching ||
-      (props.isFilterable && props.useServerSideFiltering)
-    ) {
-      filteredNumResults = props.totalNumResults || 0
-    } else if ((props.showFilteredResultCount && filtersExist) || searchTermExists) {
-      filteredNumResults = filteredData.length
-    } else {
-      filteredNumResults = props.data.length
+    const baseText = props.messageOverrides?.xResults
+      ? props.messageOverrides.xResults(filteredNumResults, props.pluralEntityName)
+      : `${filteredNumResults} ${props.pluralEntityName || 'results'}`
+    let filteredFromText = ''
+    if (filteredNumResults !== totalNumResults) {
+      const filteredFromNumber = props.totalNumResults || props.data.length
+      filteredFromText = props.messageOverrides?.resultsFilteredFrom
+        ? props.messageOverrides?.resultsFilteredFrom(
+            filteredFromNumber,
+            props.pluralEntityName
+          )
+        : `(Filtered from ${filteredFromNumber})`
+      filteredFromText = ` ${filteredFromText}`
     }
-    const baseText = `${filteredNumResults} ${props.pluralEntityName || 'results'}`
-    return filteredNumResults !== totalNumResults
-      ? `${baseText} (Filtered from ${props.totalNumResults || props.data.length})`
-      : baseText
+    if (props.usePaging || showTableActions) {
+      if (props.messageOverrides?.showingXofYResults) {
+        const xyBaseText = props.messageOverrides?.showingXofYResults(
+          filteredNumResults,
+          dataInCurrentPage.length,
+          props.pluralEntityName
+        )
+        return `${xyBaseText}${filteredFromText}`
+      }
+      return `Showing ${dataInCurrentPage.length} out of ${baseText}${filteredFromText}`
+    }
+    return `${baseText}${filteredFromText}`
   })()
 
   const emptyRow = (message: string) => (
@@ -294,8 +321,6 @@ export function Table<T>(props: Props<T>) {
     cachedRelatedDataItems.current,
   ])
 
-  const showTableActions = props.isSearchable || props.isFilterable
-
   return (
     <div
       id={props.id}
@@ -321,11 +346,7 @@ export function Table<T>(props: Props<T>) {
       </div>
       <section className="table-footer">
         {props.showResultCount && (
-          <span className="table-result-count">
-            {props.usePaging || showTableActions
-              ? `Showing ${dataInCurrentPage.length} out of ${resultsText}`
-              : resultsText}
-          </span>
+          <span className="table-result-count">{resultsText}</span>
         )}
         {canSelectRows && props.keepSelections && (
           <span className="table-selected-rows-count">

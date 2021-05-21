@@ -15,7 +15,8 @@ export function useSearch<T>(
   debounceMilis: number,
   onSearch: ((searchTerm: string) => void) | undefined,
   cachedRelatedDataItems: IdMapped<any>,
-  dateFormatterOverride: DateFormatter | undefined
+  dateFormatterOverride: DateFormatter | undefined,
+  togglerButtonTooltipOverride: string | undefined
 ) {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false)
   const [searchedData, setSearchedData] = useState<T[]>([])
@@ -59,7 +60,11 @@ export function useSearch<T>(
 
   const jsx = isEnabled ? (
     <div className={`table-action-search ${showSearchBar ? 'active' : ''}`}>
-      <Icon icon={Icons.Search} tooltip="Search" onClick={toggleSearchInput} />
+      <Icon
+        icon={Icons.Search}
+        tooltip={togglerButtonTooltipOverride || 'Search'}
+        onClick={toggleSearchInput}
+      />
       <input
         className="table-search-input"
         spellCheck={false}

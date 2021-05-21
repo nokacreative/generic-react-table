@@ -128,7 +128,11 @@ export interface MessageOverrides {
   noData?: (pluralEntityName?: string) => string
   noFilterResults?: string
   noSearchResults?: string
+  xResults?: (x: number, pluralEntityName?: string) => string
+  showingXofYResults?: (x: number, y: number, pluralEntityName?: string) => string
+  resultsFilteredFrom?: (from: number, pluralEntityName?: string) => string
   filters?: FilterMessageOverrides
+  searchTogglerButton?: string
 }
 
 export interface FormatterOverrides {
@@ -150,6 +154,8 @@ export interface FilterPlaceholderMessageOverrides {
   numericMax?: string
   numericRangeFrom?: string
   numericRangeTo?: string
+  dropdownSingle?: string
+  dropdownMultiple?: string
 }
 
 export interface FilterMessageOverrides {
