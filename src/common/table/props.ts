@@ -1,4 +1,9 @@
-import { SortingRule, TableColumn } from './models'
+import {
+  FilterMessageOverrides,
+  FormatterOverrides,
+  SortingRule,
+  TableColumn,
+} from './models'
 import { FilterMap } from './functionality/columnFilter'
 import { DataType } from './enum'
 
@@ -22,6 +27,13 @@ type BaseProps<T> = {
   totalNumResults?: number
   id?: string
   className?: string
+  messageOverrides?: {
+    noData?: (pluralEntityName?: string) => string
+    noFilterResults?: string
+    noSearchResults?: string
+    filters?: FilterMessageOverrides
+  }
+  formatterOverrides?: FormatterOverrides
 }
 
 type PagingProps =

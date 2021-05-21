@@ -34,7 +34,7 @@
     position: relative;
 
     &::before {
-      content: '$';
+      content: attr(data-moneySymbol, '$');
       color: var(--headerText);
       position: absolute;
       font-size: 0.8em;

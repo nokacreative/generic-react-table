@@ -2,7 +2,7 @@ import { IdMapped } from '../../../models'
 import { formatDate } from '../../../utils/formatting'
 import { getNestedValue } from '../../../utils/general'
 import { DataType } from '../../enum'
-import { TableColumn } from '../../models'
+import { DateFormatter, TableColumn } from '../../models'
 import { getRelatedDataItem } from '../../utils'
 
 export function searchTable<T>(
@@ -10,7 +10,8 @@ export function searchTable<T>(
   fullDataSet: T[],
   columns: TableColumn<T>[],
   setSearchedData: React.Dispatch<React.SetStateAction<T[]>>,
-  cachedRelatedDataItems: IdMapped<any>
+  cachedRelatedDataItems: IdMapped<any>,
+  dateFormatterOverride: DateFormatter | undefined
 ) {
   if (searchTerm === '') {
     setSearchedData(fullDataSet)
@@ -38,7 +39,8 @@ export function searchTable<T>(
         if (c.type === DataType.NUMBER || c.type === DataType.MONEY) {
           return (data as number).toString().includes(cleanedSearchTerm)
         } else if (c.type === DataType.DATE) {
-          const dateStr = formatDate(data, !!c.showTime, !!c.showSeconds)
+          const formatter = dateFormatterOverride || formatDate
+          const dateStr = formatter(data, !!c.showTime, !!c.showSeconds)
           return dateStr.includes(cleanedSearchTerm)
         } else if ((data as string).toLowerCase().includes(cleanedSearchTerm)) {
           return true

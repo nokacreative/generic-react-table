@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import './styles.scss'
 
 import { Icon, Icons } from '../../../icon'
-import { TableColumn } from '../../models'
+import { DateFormatter, TableColumn } from '../../models'
 import { searchTable } from './utils'
 import { debounce } from '../../../utils/general'
 import { IdMapped } from '../../../models'
@@ -14,7 +14,8 @@ export function useSearch<T>(
   columns: TableColumn<T>[],
   debounceMilis: number,
   onSearch: ((searchTerm: string) => void) | undefined,
-  cachedRelatedDataItems: IdMapped<any>
+  cachedRelatedDataItems: IdMapped<any>,
+  dateFormatterOverride: DateFormatter | undefined
 ) {
   const [showSearchBar, setShowSearchBar] = useState<boolean>(false)
   const [searchedData, setSearchedData] = useState<T[]>([])
@@ -26,7 +27,14 @@ export function useSearch<T>(
       if (isServerSide && onSearch) {
         onSearch(term)
       } else {
-        searchTable(term, data, columns, setSearchedData, cachedRelatedDataItems)
+        searchTable(
+          term,
+          data,
+          columns,
+          setSearchedData,
+          cachedRelatedDataItems,
+          dateFormatterOverride
+        )
       }
     }, debounceMilis),
     [columns, debounceMilis, cachedRelatedDataItems]

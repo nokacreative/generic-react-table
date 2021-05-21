@@ -61,7 +61,8 @@ export function Table<T>(props: Props<T>) {
     props.columns,
     props.searchDebounceMilis || DEFAULT_DEBOUNCE_MILIS,
     props.isSearchable && props.useServerSideSearching && props.onSearch,
-    cachedRelatedDataItems.current
+    cachedRelatedDataItems.current,
+    props.formatterOverrides?.date
   )
 
   const { filterJsx, columnFilters, filteredData, filtersExist, showFilterBackdrop } =
@@ -72,7 +73,8 @@ export function Table<T>(props: Props<T>) {
       props.searchDebounceMilis || DEFAULT_DEBOUNCE_MILIS,
       props.isFilterable ? !!props.useServerSideFiltering : false,
       props.isFilterable && props.useServerSideFiltering && props.onFilter,
-      cachedRelatedDataItems.current
+      cachedRelatedDataItems.current,
+      props.messageOverrides?.filters
     )
 
   const { paginationJsx, dataInCurrentPage, pageSize } = usePaging(
@@ -193,12 +195,18 @@ export function Table<T>(props: Props<T>) {
             props.data.length > 0 &&
             emptyRow(
               filtersExist
-                ? 'No results are available for the selected filters.'
-                : 'No results are available for the given search term.'
+                ? props.messageOverrides?.noFilterResults ||
+                    'No results are available for the selected filters.'
+                : props.messageOverrides?.noSearchResults ||
+                    'No results are available for the given search term.'
             )}
           {!props.isLoading &&
             props.data.length === 0 &&
-            emptyRow(`No ${props.pluralEntityName || 'items'} to display`)}
+            emptyRow(
+              props.messageOverrides?.noData
+                ? props.messageOverrides.noData(props.pluralEntityName)
+                : `No ${props.pluralEntityName || 'items'} to display`
+            )}
           {props.isLoading && props.data.length === 0 && emptyRow('')}
           {dataInCurrentPage.map((d, rowIndex) => {
             return (
@@ -239,7 +247,12 @@ export function Table<T>(props: Props<T>) {
                       )}
                       key={`table-row-${rowIndex}-cell-${columnIndex}`}
                     >
-                      {renderCellContents(c, d, cachedRelatedDataItems.current)}
+                      {renderCellContents(
+                        c,
+                        d,
+                        cachedRelatedDataItems.current,
+                        props.formatterOverrides
+                      )}
                       {c.isResizable && (
                         <ColumnResizer
                           onMouseDown={onMouseDown(columnIndex)}
@@ -284,7 +297,10 @@ export function Table<T>(props: Props<T>) {
   const showTableActions = props.isSearchable || props.isFilterable
 
   return (
-    <div id={props.id} className={`table-wrapper noka-table-colors ${props.className || ''}`}>
+    <div
+      id={props.id}
+      className={`table-wrapper noka-table-colors ${props.className || ''}`}
+    >
       {props.isLoading && (
         <div className="table-loader">{props.loader || 'Loading...'}</div>
       )}

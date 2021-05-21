@@ -5,7 +5,12 @@ import { formatDate, formatMoney } from '../utils/formatting'
 import { getNestedValue } from '../utils/general'
 import { HtmlSanitizationMode, sanitizeHtmlString } from '../utils/sanitization'
 import { DataType } from './enum'
-import { ColumnResizeData, RelationalColumn, TableColumn } from './models'
+import {
+  ColumnResizeData,
+  FormatterOverrides,
+  RelationalColumn,
+  TableColumn,
+} from './models'
 
 const EMPTY_CELL_TEXT = '-'
 
@@ -27,7 +32,8 @@ export function getRelatedDataItem<T>(
 export function renderCellContents<T>(
   columnDefinition: TableColumn<T>,
   dataItem: T,
-  cachedRelatedDataItems: IdMapped<any>
+  cachedRelatedDataItems: IdMapped<any>,
+  formatterOverrides: FormatterOverrides | undefined
 ) {
   const isNumericType =
     columnDefinition.type === DataType.NUMBER || columnDefinition.type === DataType.MONEY
@@ -61,7 +67,8 @@ export function renderCellContents<T>(
 
   // Date
   else if (columnDefinition.type === DataType.DATE) {
-    return formatDate(value, !!columnDefinition.showTime, !!columnDefinition.showSeconds)
+    const formatter = formatterOverrides?.date || formatDate
+    return formatter(value, !!columnDefinition.showTime, !!columnDefinition.showSeconds)
   }
 
   // Rich text
@@ -92,6 +99,9 @@ export function renderCellContents<T>(
   // Money
   else if (columnDefinition.type === DataType.MONEY) {
     if (value) {
+      if (formatterOverrides?.money) {
+        return formatterOverrides.money(value)
+      }
       return `$${formatMoney(value)}`
     }
     return EMPTY_CELL_TEXT

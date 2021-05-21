@@ -116,3 +116,40 @@ export interface ColumnResizeData {
 export type ReorderableColumn<T> = TableColumn<T> & {
   reorderProps: any
 }
+
+export type DateFormatter = (
+  timeValue: number,
+  showTime: boolean,
+  showSeconds: boolean
+) => string
+export type MoneyFormatter = (value: number) => string
+
+export interface FormatterOverrides {
+  date?: DateFormatter
+  money?: MoneyFormatter
+}
+
+export interface FilterPlaceholderMessageOverrides {
+  genericFilter?: string
+  exactMatch?: string
+  partialMatch?: string
+  dateRangeFrom?: string
+  dateRangeTo?: string
+  dateExact?: string
+  dateMin?: string
+  dateMax?: string
+  numericExact?: string
+  numericMin?: string
+  numericMax?: string
+  numericRangeFrom?: string
+  numericRangeTo?: string
+}
+
+export interface FilterMessageOverrides {
+  moneySymbol?: string
+  togglerButtonTooltip?: string
+  clearButtonTooltip?: string
+  placeholders?: FilterPlaceholderMessageOverrides
+  dateFormat?: string
+  timeFormat?: string
+}
