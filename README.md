@@ -352,161 +352,169 @@ Or by adding an ID (or extra `className`) to the table, and scoping the colours 
 }
 ```
 
+### Text overriding
+
+All messages and formatters (eg. date and money) can be overriden.
+
+[react-datepicker](https://www.npmjs.com/package/react-datepicker) is used for the Datepicker. Thus, other than setting the locale in the overrides as written above, changing its locale contains a bit more steps; refer to the Localization section of the linked package to see how it's done.
+
 # Comprehensive API reference
 
 ## Common enums
 
 ### Data (Column) Types
 
-Enum Name | Description
---- | ---
-PLAIN_TEXT | Any non-formatted string.
-RICH_TEXT | Any string with HTML formatting. Note that only simple tags (such as `i`, `b`, `br`, etc.) are allowed.
-NUMBER | Any numeric value.
-DATE | Any date. It expects a time value, eg. the result of `Date.getTime()`.
-COLOR | Any valid CSS colour value, such as `blue`, `#0000FF`, etc.
-MONEY | Any plain numeric value. It is automatically formatted when rendered.
-RELATION | A value that is used in another dataset. Ex. Users in a system with groups may have a `groupId` property. When this data type is used for a column, the corresponding `Group` object is automatically retrieved, and can be rendered however you want.
-CUSTOM | Anything that does not fall into the above categories.
+| Enum Name  | Description                                                                                                                                                                                                                                            |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| PLAIN_TEXT | Any non-formatted string.                                                                                                                                                                                                                              |
+| RICH_TEXT  | Any string with HTML formatting. Note that only simple tags (such as `i`, `b`, `br`, etc.) are allowed.                                                                                                                                                |
+| NUMBER     | Any numeric value.                                                                                                                                                                                                                                     |
+| DATE       | Any date. It expects a time value, eg. the result of `Date.getTime()`.                                                                                                                                                                                 |
+| COLOR      | Any valid CSS colour value, such as `blue`, `#0000FF`, etc.                                                                                                                                                                                            |
+| MONEY      | Any plain numeric value. It is automatically formatted when rendered.                                                                                                                                                                                  |
+| RELATION   | A value that is used in another dataset. Ex. Users in a system with groups may have a `groupId` property. When this data type is used for a column, the corresponding `Group` object is automatically retrieved, and can be rendered however you want. |
+| CUSTOM     | Anything that does not fall into the above categories.                                                                                                                                                                                                 |
 
 There's also a self-explanatory `SortDirection` enum that is referenced below, with values of `ASCENDING` and `DESCENDING`.
 
 ### Filter Types
-Enum Name | Description
---- | ---
-EXACT_MATCH | Match exactly what the user types (but is case-insenstive).
-PARTIAL_MATCH | Returns a match when data contains the search term.
-RANGED | Has a minimum and maximum. For numeric types only (including `DATE` and `MONEY`).
-MINIMUM | Returns a match when the value is at _least_ (and including) a certain threshold.
-MAXIMUM | Returns a match when the value is at _most_ (and including) a certain threshold.
+
+| Enum Name     | Description                                                                       |
+| ------------- | --------------------------------------------------------------------------------- |
+| EXACT_MATCH   | Match exactly what the user types (but is case-insenstive).                       |
+| PARTIAL_MATCH | Returns a match when data contains the search term.                               |
+| RANGED        | Has a minimum and maximum. For numeric types only (including `DATE` and `MONEY`). |
+| MINIMUM       | Returns a match when the value is at _least_ (and including) a certain threshold. |
+| MAXIMUM       | Returns a match when the value is at _most_ (and including) a certain threshold.  |
 
 ## Table component properties
 
 ### Base
 
-Property | type | Required | Description
---- | --- | --- | ---
-columns | TableColumn<T>[] | Y | The column definitions. 
-data | T[] | Y | The data that the table is to render.
-pluralEntityName | string | N | Ex. 'products', 'users', etc. Used in result messages, num selected messages, and when the table is empty (ex. "No items to display").
-numPinnedColumns | number | N | The number of columns that should be pinned, if any.
-canReorderColumns | boolean | N | Whether or not columns can be reordered.
-minNumRows | number | N | The minimum number of rows the table must have.
-showResultCount | boolean | N | Whether or not to show the number of results in the table.
-isLoading | boolean | N | Shows a loader if true.
-loader | React.ReactNode | N | Override the default loading text with a component.
-canSortMultipleColumns | boolean | N | False by default.
-tableName | string | N | The name of the table. Displayed in the header, if given.
-searchDebounceMilis | number | The number of miliseconds to debounce searching and filtering inputs with. 200 by default.
+| Property               | type             | Required                                                                                   | Description                                                                                                                            |
+| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| columns                | TableColumn<T>[] | Y                                                                                          | The column definitions.                                                                                                                |
+| data                   | T[]              | Y                                                                                          | The data that the table is to render.                                                                                                  |
+| pluralEntityName       | string           | N                                                                                          | Ex. 'products', 'users', etc. Used in result messages, num selected messages, and when the table is empty (ex. "No items to display"). |
+| numPinnedColumns       | number           | N                                                                                          | The number of columns that should be pinned, if any.                                                                                   |
+| canReorderColumns      | boolean          | N                                                                                          | Whether or not columns can be reordered.                                                                                               |
+| minNumRows             | number           | N                                                                                          | The minimum number of rows the table must have.                                                                                        |
+| showResultCount        | boolean          | N                                                                                          | Whether or not to show the number of results in the table.                                                                             |
+| isLoading              | boolean          | N                                                                                          | Shows a loader if true.                                                                                                                |
+| loader                 | React.ReactNode  | N                                                                                          | Override the default loading text with a component.                                                                                    |
+| canSortMultipleColumns | boolean          | N                                                                                          | False by default.                                                                                                                      |
+| tableName              | string           | N                                                                                          | The name of the table. Displayed in the header, if given.                                                                              |
+| searchDebounceMilis    | number           | The number of miliseconds to debounce searching and filtering inputs with. 200 by default. |
 
 All properties below are technically optional, but required if you want the specific functionality defined by each header.
 
 ### Paging
 
-Property | type | Required | Description
---- | --- | --- | ---
-usePaging | boolean | Y | Whether or not the table should be paged. False by default.
-defaultPageSize | number | N | The number of results that should be in each page.
-pageSizeOptions | number[] |  N | Generates a dropdown that allows the user to select their preferred page size. If not given, the dropdown will not appear.
-useServerSidePaging | boolean | N | Whether or not to use server-side paging. False by default.
-onPage | (pageIndex: number, pageSize: number) => void | Conditional | Necessary when `useServerSidePaging` is true.
-totalNumPages | number | Conditional | Necessary when `useServerSidePaging` is true. Should be returned from the server.
+| Property            | type                                          | Required    | Description                                                                                                                |
+| ------------------- | --------------------------------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------- |
+| usePaging           | boolean                                       | Y           | Whether or not the table should be paged. False by default.                                                                |
+| defaultPageSize     | number                                        | N           | The number of results that should be in each page.                                                                         |
+| pageSizeOptions     | number[]                                      | N           | Generates a dropdown that allows the user to select their preferred page size. If not given, the dropdown will not appear. |
+| useServerSidePaging | boolean                                       | N           | Whether or not to use server-side paging. False by default.                                                                |
+| onPage              | (pageIndex: number, pageSize: number) => void | Conditional | Necessary when `useServerSidePaging` is true.                                                                              |
+| totalNumPages       | number                                        | Conditional | Necessary when `useServerSidePaging` is true. Should be returned from the server.                                          |
 
 ### Row selection
 
-Property | type | Required | Description
---- | --- | --- | ---
-onRowSelected | (row: T, allSelections: T[], isDeselected: boolean) => void | Y | What to do when a row has been selected. `allSelections` will be empty if only single selections are supported.
-keepSelections | boolean | N | Whether or not to keep selections, eg. allow multiple selections. False by default.
+| Property       | type                                                        | Required | Description                                                                                                     |
+| -------------- | ----------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------- |
+| onRowSelected  | (row: T, allSelections: T[], isDeselected: boolean) => void | Y        | What to do when a row has been selected. `allSelections` will be empty if only single selections are supported. |
+| keepSelections | boolean                                                     | N        | Whether or not to keep selections, eg. allow multiple selections. False by default.                             |
 
 ### Searching
 
-Property | type | Required | Description
---- | --- | --- | ---
-isSearchable | boolean | Y | Whether or not the table can be searched through. False by default.
-useServerSideSearching | boolean | N | False by default.
-onSearch | (currentFilters: FilterMap<T>) => void | Conditional | Necessary if `useServerSideFiltering` is true.
+| Property               | type                                   | Required    | Description                                                         |
+| ---------------------- | -------------------------------------- | ----------- | ------------------------------------------------------------------- |
+| isSearchable           | boolean                                | Y           | Whether or not the table can be searched through. False by default. |
+| useServerSideSearching | boolean                                | N           | False by default.                                                   |
+| onSearch               | (currentFilters: FilterMap<T>) => void | Conditional | Necessary if `useServerSideFiltering` is true.                      |
 
 ### Filtering
 
-Property | type | Required | Description
---- | --- | --- | ---
-isFilterable | boolean | Y | Whether or not the table can be filtered. False by default.
-showFilteredResultCount | boolean | N | If true, the result count will say "Showing x of y results (filtered from z)". False by default.
-useServerSideFiltering | boolean | N | False by default.
-onFilter | (currentFilters: FilterMap<T>) => void | Conditional | Necessary if `useServerSideFiltering` is true.
+| Property                | type                                   | Required    | Description                                                                                      |
+| ----------------------- | -------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------ |
+| isFilterable            | boolean                                | Y           | Whether or not the table can be filtered. False by default.                                      |
+| showFilteredResultCount | boolean                                | N           | If true, the result count will say "Showing x of y results (filtered from z)". False by default. |
+| useServerSideFiltering  | boolean                                | N           | False by default.                                                                                |
+| onFilter                | (currentFilters: FilterMap<T>) => void | Conditional | Necessary if `useServerSideFiltering` is true.                                                   |
 
 ### Server-only common properties
-Property | type | Required | Description
---- | --- | --- | ---
-totalNumResults | number | Y | The total number of results.
+
+| Property        | type   | Required | Description                  |
+| --------------- | ------ | -------- | ---------------------------- |
+| totalNumResults | number | Y        | The total number of results. |
 
 ## Column property break down
 
 ### Common properties
 
-Property | type | Required | Description
---- | --- | --- | ---
-type | `DataType` | Y | The type of the column.
-headerText | string | Y | The text that is displayed in the column's header.
-defaultWidth | string | N | How wide you want the column to be. Can be in px, or take in any [Grid Layout value](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns).
-isResizable | boolean | N | Whether or not the column can be resized.
-isSortable | boolean | N | Whether or not the column can be sorted.
-sortAccessor | (row: T) => any | N | All column types (aside from `CUSTOM` and `RELATION`) sort based on their dataType by default. You can override this behaviour by returning the data you would instead like to sort by.
-defaultSortDirection | `SortDirection` | N | The direction to sort by, by default.
-searchMatcher | (row: T, searchTerm: string) => boolean | N | Like with the sortAccessor, all non-custom and non-relation columns have their own code for determining whether or not its data includes the search term. You can override this behaviour (or define it for custom/relational columns) with this function.
+| Property             | type                                    | Required | Description                                                                                                                                                                                                                                                |
+| -------------------- | --------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| type                 | `DataType`                              | Y        | The type of the column.                                                                                                                                                                                                                                    |
+| headerText           | string                                  | Y        | The text that is displayed in the column's header.                                                                                                                                                                                                         |
+| defaultWidth         | string                                  | N        | How wide you want the column to be. Can be in px, or take in any [Grid Layout value](https://developer.mozilla.org/en-US/docs/Web/CSS/grid-template-columns).                                                                                              |
+| isResizable          | boolean                                 | N        | Whether or not the column can be resized.                                                                                                                                                                                                                  |
+| isSortable           | boolean                                 | N        | Whether or not the column can be sorted.                                                                                                                                                                                                                   |
+| sortAccessor         | (row: T) => any                         | N        | All column types (aside from `CUSTOM` and `RELATION`) sort based on their dataType by default. You can override this behaviour by returning the data you would instead like to sort by.                                                                    |
+| defaultSortDirection | `SortDirection`                         | N        | The direction to sort by, by default.                                                                                                                                                                                                                      |
+| searchMatcher        | (row: T, searchTerm: string) => boolean | N        | Like with the sortAccessor, all non-custom and non-relation columns have their own code for determining whether or not its data includes the search term. You can override this behaviour (or define it for custom/relational columns) with this function. |
 
 ### Plain text columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model. Ex. if you have `UserModel { id: string }`, and you want an ID column, you would write `propertyPath: 'id'`.
-filterType | `FilterType` (`PARTIAL_MATCH` or `EXACT_MATCH` only) | N | Only used if `isFilterable` is set to `true` in the Table component. Defaults to partial.
+| Property     | type                                                 | Required | Description                                                                                                                                         |
+| ------------ | ---------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| propertyPath | string                                               | Y        | Where the property lies in your model. Ex. if you have `UserModel { id: string }`, and you want an ID column, you would write `propertyPath: 'id'`. |
+| filterType   | `FilterType` (`PARTIAL_MATCH` or `EXACT_MATCH` only) | N        | Only used if `isFilterable` is set to `true` in the Table component. Defaults to partial.                                                           |
 
 ### Rich text columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model. Ex. if you have `UserModel { bio: string }`, and you want an Bio column, you would write `propertyPath: 'bio'`.
+| Property     | type   | Required | Description                                                                                                                                            |
+| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| propertyPath | string | Y        | Where the property lies in your model. Ex. if you have `UserModel { bio: string }`, and you want an Bio column, you would write `propertyPath: 'bio'`. |
 
 ### Number and Money columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model.
-filterType | `FilterType` (excluding `PARTIAL_MATCH`) | Conditional | Only used if `isFilterable` is set to `true` in the Table component. It does not default to anything, so it _must_ be specified in this case.
+| Property     | type                                     | Required    | Description                                                                                                                                   |
+| ------------ | ---------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| propertyPath | string                                   | Y           | Where the property lies in your model.                                                                                                        |
+| filterType   | `FilterType` (excluding `PARTIAL_MATCH`) | Conditional | Only used if `isFilterable` is set to `true` in the Table component. It does not default to anything, so it _must_ be specified in this case. |
 
 ### Date columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model.
-showTime | boolean | N | Whether or not to show the time with the date.
-showSeconds | boolean | N | Whether or not to include seconds with the time. False by default.
-filterType | `FilterType` (excluding `PARTIAL_MATCH`) | Conditional | Only used if `isFilterable` is set to `true` in the Table component. It does not default to anything, so it _must_ be specified in this case.
+| Property     | type                                     | Required    | Description                                                                                                                                   |
+| ------------ | ---------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| propertyPath | string                                   | Y           | Where the property lies in your model.                                                                                                        |
+| showTime     | boolean                                  | N           | Whether or not to show the time with the date.                                                                                                |
+| showSeconds  | boolean                                  | N           | Whether or not to include seconds with the time. False by default.                                                                            |
+| filterType   | `FilterType` (excluding `PARTIAL_MATCH`) | Conditional | Only used if `isFilterable` is set to `true` in the Table component. It does not default to anything, so it _must_ be specified in this case. |
 
 ### Colour columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model.
-filterIsMultiple | boolean | N | Only used if `isFilterable` is set to `true` in the Table component. Defaults to false. Determines whether or not multiple selections can be made in the filter.
+| Property         | type    | Required | Description                                                                                                                                                      |
+| ---------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| propertyPath     | string  | Y        | Where the property lies in your model.                                                                                                                           |
+| filterIsMultiple | boolean | N        | Only used if `isFilterable` is set to `true` in the Table component. Defaults to false. Determines whether or not multiple selections can be made in the filter. |
 
 ### Relation columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-propertyPath | string | Y | Where the property lies in your model.
-relatedDataList | { id: string }[] &#124; { [key: string]: any } | Y | Where to get the related data from.
-render | (relatedData: any) => string &#124; JSX.Element | Y | How to display the cell data.
-filter | `CustomFilter` | Conditional | Must be defined if `isFilterable` is set to `true` in the Table component.
+| Property        | type                                            | Required    | Description                                                                |
+| --------------- | ----------------------------------------------- | ----------- | -------------------------------------------------------------------------- |
+| propertyPath    | string                                          | Y           | Where the property lies in your model.                                     |
+| relatedDataList | { id: string }[] &#124; { [key: string]: any }  | Y           | Where to get the related data from.                                        |
+| render          | (relatedData: any) => string &#124; JSX.Element | Y           | How to display the cell data.                                              |
+| filter          | `CustomFilter`                                  | Conditional | Must be defined if `isFilterable` is set to `true` in the Table component. |
 
 ### Custom columns
 
-Property | type | Required | Description
---- | --- | --- | ---
-render | (data: T) => string &#124; JSX.Element &#124; null | Y | How to display the cell data.
-filter | `CustomFilter` | Conditional | Must be defined if `isFilterable` is set to `true` in the Table component.
+| Property | type                                               | Required    | Description                                                                |
+| -------- | -------------------------------------------------- | ----------- | -------------------------------------------------------------------------- |
+| render   | (data: T) => string &#124; JSX.Element &#124; null | Y           | How to display the cell data.                                              |
+| filter   | `CustomFilter`                                     | Conditional | Must be defined if `isFilterable` is set to `true` in the Table component. |
 
 ## Custom Filters
 
@@ -514,51 +522,51 @@ Used for custom and relation columns.
 
 ### Text
 
-Property | type | Required | Description
---- | --- | --- | ---
-type | `CustomFilterType.TEXT` | Y | Tells the compiler that you want to use this type of filter.
-matcher | (value: string, row: T, relatedDataItem?: any) => boolean | Y | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one.
+| Property | type                                                      | Required | Description                                                                                                                                      |
+| -------- | --------------------------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| type     | `CustomFilterType.TEXT`                                   | Y        | Tells the compiler that you want to use this type of filter.                                                                                     |
+| matcher  | (value: string, row: T, relatedDataItem?: any) => boolean | Y        | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one. |
 
 ### Number
 
-Property | type | Required | Description
---- | --- | --- | ---
-type | `CustomFilterType.NUMBER` | Y | Tells the compiler that you want to use this type of filter.
-isRanged | boolean | N | Whether or not to use a ranged filter (eg. with min and max values).
-matcher | (value: number, row: T, relatedDataItem?: any) => boolean | Conditional | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one. Either this or the ranged version below must be defined.
-matcher | ( min: number &#124; '', max: number &#124; '', row: T, relatedDataItem?: any ) => boolean } | Conditional | Same as above, but for ranged filters only. An empty value is passed in as `''`.
+| Property | type                                                                                         | Required    | Description                                                                                                                                                                                               |
+| -------- | -------------------------------------------------------------------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| type     | `CustomFilterType.NUMBER`                                                                    | Y           | Tells the compiler that you want to use this type of filter.                                                                                                                                              |
+| isRanged | boolean                                                                                      | N           | Whether or not to use a ranged filter (eg. with min and max values).                                                                                                                                      |
+| matcher  | (value: number, row: T, relatedDataItem?: any) => boolean                                    | Conditional | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one. Either this or the ranged version below must be defined. |
+| matcher  | ( min: number &#124; '', max: number &#124; '', row: T, relatedDataItem?: any ) => boolean } | Conditional | Same as above, but for ranged filters only. An empty value is passed in as `''`.                                                                                                                          |
 
 ### Dropdown
 
-Property | type | Required | Description
---- | --- | --- | ---
-type | `CustomFilterType.DROPDOWN` | Y | Tells the compiler that you want to use this type of filter.
-options | `DropdownOption[]` | Y | The options to pass into the dropdown. `DropwonOption` is defined as `{ text: string, value: any, render?: () => ReactNode }`.
-matcher | (value: any, row: T, relatedDataItem?: any) => boolean | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one.
-isMultiple | boolean | N | Whether or not multiple selections can be made for this filter.
+| Property   | type                                                   | Required                                                                                                                                         | Description                                                                                                                    |
+| ---------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| type       | `CustomFilterType.DROPDOWN`                            | Y                                                                                                                                                | Tells the compiler that you want to use this type of filter.                                                                   |
+| options    | `DropdownOption[]`                                     | Y                                                                                                                                                | The options to pass into the dropdown. `DropwonOption` is defined as `{ text: string, value: any, render?: () => ReactNode }`. |
+| matcher    | (value: any, row: T, relatedDataItem?: any) => boolean | Determines whether or not the given value should return a match for the row. `relatedDataItem` is passed in when the column is a relational one. |
+| isMultiple | boolean                                                | N                                                                                                                                                | Whether or not multiple selections can be made for this filter.                                                                |
 
 ## Style overriding - CSS colour variables
 
 ### Common
 
-Variable | Default value | Description
---- | --- | ---
---text | <span style="color: #505050">#505050</span> | The colour of all normal text elements. Used in non-header cells, icons, dropdowns, and pagination buttons.
---headerText | <span style="color: #777777">#777777</span> | The colour of table headers and input-clear icons.
---links | <span style="color: #1abc9c">#1abc9c</span> | Used for actual links, and any element that behaves as one (ex. the pagination buttons/links, on hover).
---textAgainstNoBg | Whatever `text` is | Anything that is rendered against a transparent background, ex. the header icons, pagination buttons, etc.
---inputBg | `cellBg` | The background of any input.
---inputText | `text` | The text colour of any input.
---active | <span style="color: #ff9933">#ff9933</span> | The colour of any active or focused elements.
+| Variable          | Default value                               | Description                                                                                                 |
+| ----------------- | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| --text            | <span style="color: #505050">#505050</span> | The colour of all normal text elements. Used in non-header cells, icons, dropdowns, and pagination buttons. |
+| --headerText      | <span style="color: #777777">#777777</span> | The colour of table headers and input-clear icons.                                                          |
+| --links           | <span style="color: #1abc9c">#1abc9c</span> | Used for actual links, and any element that behaves as one (ex. the pagination buttons/links, on hover).    |
+| --textAgainstNoBg | Whatever `text` is                          | Anything that is rendered against a transparent background, ex. the header icons, pagination buttons, etc.  |
+| --inputBg         | `cellBg`                                    | The background of any input.                                                                                |
+| --inputText       | `text`                                      | The text colour of any input.                                                                               |
+| --active          | <span style="color: #ff9933">#ff9933</span> | The colour of any active or focused elements.                                                               |
 
 ### Table
 
-Variable | Default value | Description
---- | --- | ---
---cellBg | <span style="color: white; background: black;">white</span> | The background of a normal cell/row.
---alternateCellBg | <span style="color: #ffd6ad; background: black;">#f7f5f5</span> | The background of the alternating rows.
---headerCellBg | <span style="color: #bc451a">#bc451a</span> | The background of the header cells.
---headerCellText | <span style="color: white; background: black;">white</span>  | The text colour of the header cells.
---rowHover | <span style="color: #ffd6ad">#ffd6ad</span> | Used when a selectable row is hovered.
---linksDark | <span style="color: #008066">#008066</span> | A darker version of `--links`, used exclusively when a selectable row is hovered, as the colours of the row hover may cause links to look too faint.
---separator | <span style="color: #b39f98">#b39f98</span> | The colour of the table borders.
+| Variable          | Default value                                                   | Description                                                                                                                                          |
+| ----------------- | --------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| --cellBg          | <span style="color: white; background: black;">white</span>     | The background of a normal cell/row.                                                                                                                 |
+| --alternateCellBg | <span style="color: #ffd6ad; background: black;">#f7f5f5</span> | The background of the alternating rows.                                                                                                              |
+| --headerCellBg    | <span style="color: #bc451a">#bc451a</span>                     | The background of the header cells.                                                                                                                  |
+| --headerCellText  | <span style="color: white; background: black;">white</span>     | The text colour of the header cells.                                                                                                                 |
+| --rowHover        | <span style="color: #ffd6ad">#ffd6ad</span>                     | Used when a selectable row is hovered.                                                                                                               |
+| --linksDark       | <span style="color: #008066">#008066</span>                     | A darker version of `--links`, used exclusively when a selectable row is hovered, as the colours of the row hover may cause links to look too faint. |
+| --separator       | <span style="color: #b39f98">#b39f98</span>                     | The colour of the table borders.                                                                                                                     |

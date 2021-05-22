@@ -97,7 +97,7 @@ export function Table<T>(props: Props<T>) {
       (props.isFilterable && props.useServerSideFiltering)
     ) {
       return props.totalNumResults || 0
-    } else if ((props.showFilteredResultCount && filtersExist) || searchTermExists) {
+    } else if (filtersExist || searchTermExists) {
       return filteredData.length
     } else {
       return props.data.length
@@ -125,11 +125,11 @@ export function Table<T>(props: Props<T>) {
         : `(Filtered from ${filteredFromNumber})`
       filteredFromText = ` ${filteredFromText}`
     }
-    if (props.usePaging || showTableActions) {
+    if (props.usePaging) {
       if (props.messageOverrides?.showingXofYResults) {
         const xyBaseText = props.messageOverrides?.showingXofYResults(
-          filteredNumResults,
           dataInCurrentPage.length,
+          filteredNumResults,
           props.pluralEntityName
         )
         return `${xyBaseText}${filteredFromText}`

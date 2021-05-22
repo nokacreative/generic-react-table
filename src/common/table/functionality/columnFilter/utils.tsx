@@ -383,11 +383,14 @@ function generateDateFilter<T>(
   isRanged: boolean,
   rangedPart?: 'from' | 'to'
 ) {
+  const column = constantArgs.column as DateColumn<T>
   const defaultValue: Date | null | RangedDateFilterValue = isRanged
     ? { from: null, to: null }
     : null
-  const column = constantArgs.column as DateColumn<T>
-  const placeholderOverrides = constantArgs.messageOverrides?.placeholders
+
+  const messageOverrides = constantArgs.messageOverrides
+  const placeholderOverrides = messageOverrides?.placeholders
+
   const placeholder = (() => {
     if (isRanged) {
       if (placeholderOverrides) {
@@ -404,8 +407,16 @@ function generateDateFilter<T>(
     }
     return placeholderOverrides?.genericFilter || 'Filter'
   })()
+
+  const datePickerOverrides = messageOverrides?.datePicker
+  const dateFormat = datePickerOverrides?.dateFormat || 'MM/dd/yyyy'
   const showTime = column.showTime
-  const timeFormat = column.showSeconds ? 'hh:mm:ss a' : 'hh:mm a'
+  const timeFormat = datePickerOverrides?.timeFormat
+    ? datePickerOverrides.timeFormat(!!column.showSeconds)
+    : column.showSeconds
+    ? 'hh:mm:ss a'
+    : 'hh:mm a'
+
   return (
     <DatePicker
       selected={(() => {
@@ -429,12 +440,13 @@ function generateDateFilter<T>(
       showTimeSelect={showTime}
       showTimeInput={showTime}
       placeholderText={placeholder}
-      dateFormat={showTime ? `MM/dd/yyyy ${timeFormat}` : 'MM/dd/yyyy'}
+      dateFormat={showTime ? `${dateFormat} ${timeFormat}` : dateFormat}
       timeFormat={timeFormat}
       isClearable
       popperClassName="table-date-picker-popup"
       onCalendarOpen={() => setShowFilterBackdrop(true)}
       onCalendarClose={() => setShowFilterBackdrop(false)}
+      locale={datePickerOverrides?.locale}
     />
   )
 }
