@@ -626,6 +626,17 @@ Everything is optional.
 
 ### General Messages
 
+| Property            | type                                                        | Default value                                                    | Description                                                                         |
+| ------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| noData              | (pluralEntityName?: string) => string                       | No {pluralEntityName &#124;&#124; items} to display.             | For when there is no data passed into the table.                                    |
+| noFilterResults     | string                                                      | No results are available for the selected filters.               | -                                                                                   |
+| noSearchResults     | string                                                      | No results are available for the given search term.              | -                                                                                   |
+| xResults            | (x: number, pluralEntityName?: string) => string            | `x` {`pluralEntityName` &#124;&#124; results}                    | The number of results text at the bottom left corner of the table.                  |
+| showingXofYResults  | (x: number, y: number, pluralEntityName?: string) => string | Showing `x` out of `y` {`pluralEntityName` &#124;&#124; results} | Used when there is paging.                                                          |
+| resultsFilteredFrom | (from: number, pluralEntityName?: string) => string         | (Filtered from `from`)                                           | Used when there are filters. Appended to the end of either of the above texts.      |
+| filters             | object                                                      | -                                                                | See the section below.                                                              |
+| searchTogglerButton | string                                                      | Search                                                           | The tooltip that appears when you hover over the Search icon in the table's header. |
+
 ### Filter Messages/Text (General)
 
 | Property             | type   | Default value     | Description                                                                               |
