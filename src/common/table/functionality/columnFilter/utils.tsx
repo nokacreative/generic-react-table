@@ -279,8 +279,8 @@ const NUMERIC_PLACEHOLDER_TEXT_BY_TYPE = (
   [key in FilterTypeWithPlaceholderText]: string
 } => ({
   [FilterType.EXACT_MATCH]: placeholderOverrides?.numericExact || 'Exactly',
-  [FilterType.MAXIMUM]: placeholderOverrides?.numericMin || 'At most',
-  [FilterType.MINIMUM]: placeholderOverrides?.numericMax || 'At least',
+  [FilterType.MAXIMUM]: placeholderOverrides?.numericMax || 'At most',
+  [FilterType.MINIMUM]: placeholderOverrides?.numericMin || 'At least',
 })
 
 const DATE_PLACEHOLDER_TEXT_BY_TYPE = (

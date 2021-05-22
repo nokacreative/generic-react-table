@@ -352,9 +352,58 @@ Or by adding an ID (or extra `className`) to the table, and scoping the colours 
 }
 ```
 
+A full list of the available variables, their default values, and their descriptions can be found in the "Style overriding - CSS colour variables" section under the API reference.
+
 ### Text overriding
 
+(Pardon the Google Translate)
+
+![Text overriding](https://user-images.githubusercontent.com/6403562/119209391-57fb6d00-ba74-11eb-844f-5fc408de2654.png)
+
 All messages and formatters (eg. date and money) can be overriden.
+
+```
+import { MessageOverrides, FormatterOverrides } from '@nokacreative/generic-react-table'
+
+const messageOverrides: MessageOverrides = {
+  noData: (pluralEntityName?: string) => `il n'y a pas de ${pluralEntityName}`,
+  noFilterResults: "Il n'y a aucun résultat pour les filtres donnés!",
+  noSearchResults: "Il n'y a aucun résultat pour le terme de recherche donné!",
+  filters: {
+    moneySymbol: '€',
+    togglerButtonTooltip: 'Filtre',
+    clearButtonTooltip: 'Effacer tous les filtres',
+    placeholders: {
+      genericFilter: 'Filtre',
+      exactMatch: 'exactement',
+      partialMatch: 'contient',
+      (etc.)
+    },
+    datePicker: {
+      dateFormat: 'dd MMMM yyyy',
+      locale: 'fr',
+    },
+  }
+}
+
+const formatterOverrides: FormatterOverrides = {
+  date: (timeValue: number) =>
+    new Date(timeValue).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }),
+  money: (value: number) => `€${value}`,
+}
+
+<Table
+  {...}
+  messageOverrides={messageOverrides}
+  formatterOverrides={formatterOverrides}
+/>
+```
+
+To see the full list of overridable properties, see the "Text Overrides" section under the API reference.
 
 [react-datepicker](https://www.npmjs.com/package/react-datepicker) is used for the Datepicker. Thus, other than setting the locale in the overrides as written above, changing its locale contains a bit more steps; refer to the Localization section of the linked package to see how it's done.
 
@@ -570,3 +619,56 @@ Used for custom and relation columns.
 | --rowHover        | <span style="color: #ffd6ad">#ffd6ad</span>                     | Used when a selectable row is hovered.                                                                                                               |
 | --linksDark       | <span style="color: #008066">#008066</span>                     | A darker version of `--links`, used exclusively when a selectable row is hovered, as the colours of the row hover may cause links to look too faint. |
 | --separator       | <span style="color: #b39f98">#b39f98</span>                     | The colour of the table borders.                                                                                                                     |
+
+## Text overrides
+
+Everything is optional.
+
+### General Messages
+
+### Filter Messages/Text (General)
+
+| Property             | type   | Default value     | Description                                                                               |
+| -------------------- | ------ | ----------------- | ----------------------------------------------------------------------------------------- |
+| moneySymbol          | string | $                 | Used in front of money filters.                                                           |
+| togglerButtonTooltip | string | Filter            | The tooltip that pops up when you hover over the Filter icon in the table's header.       |
+| clearButtonTooltip   | string | Clear All Filters | The tooltip that pops up when you hover over the Clear-Filter icon in the table's header. |
+| placeholders         | object | -                 | See the section below.                                                                    |
+| datePicker           | object | -                 | See the second section below.                                                             |
+
+### Filter Placeholders
+
+All of these are strings.
+
+| Property         | Default value | Description                                                    |
+| ---------------- | ------------- | -------------------------------------------------------------- |
+| genericFilter    | Filter        | Text for anything that is not covered by the below variables.  |
+| exactMatch       | Exact         | For text filters that use an exact match                       |
+| partialMatch     | Contains      | For text filters that use a partial match                      |
+| dateExact        | Exactly       | For date filters that use an exact match                       |
+| dateRangeFrom    | From          | For ranged date filters: the 'from' value                      |
+| dateRangeTo      | To            | For ranged date filters: the 'to' value                        |
+| dateMin          | From          | For date filters that check against a minimum threshold        |
+| dateMax          | Until         | For date filters that check against a maximum threshold        |
+| numericExact     | Exactly       | For numberic (number or money) filters that use an exact match |
+| numericRangeFrom | Min           | For ranged number filters: the 'min' value                     |
+| numericRangeTo   | Max           | For ranged number filters: the 'max' value                     |
+| numericMin       | At least      | For numeric filters that check against a minimum threshold     |
+| numericMax       | At most       | For numeric filters that check against a maximum threshold     |
+| dropdownSingle   | Filter        | For dropdown filters where only a single selection can be made |
+| dropdownMultiple | Multiple      | For dropdown filters where multiple selections can be made     |
+
+### Datepicker
+
+| Property   | type                             | Default value                          | Description                                                                 |
+| ---------- | -------------------------------- | -------------------------------------- | --------------------------------------------------------------------------- |
+| dateFormat | string                           | 'MM/dd/yyyy'                           | Note these should be written in [Moment.js](https://momentjs.com/) formats. |
+| timeFormat | (withSeconds: boolean) => string | `hh:mm a` or `hh:mm:ss a` with seconds | -                                                                           |
+| locale     | string                           | undefined                              | -                                                                           |
+
+### Formatters
+
+| Property | Signature                                                             | Default value              | Description                                                                                   |
+| -------- | --------------------------------------------------------------------- | -------------------------- | --------------------------------------------------------------------------------------------- |
+| date     | (timeValue: number, showTime: boolean,showSeconds: boolean) => string | Ex. 01/29/2021 11:50:30 AM | How to format any given date, with the value passed in as what's retrieved from `.getTime()`. |
+| money    | (value: number) => string                                             | Ex. $100,000,000.00        | How to format moneric values.                                                                 |
