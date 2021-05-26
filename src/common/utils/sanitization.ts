@@ -9,6 +9,8 @@ export enum HtmlSanitizationMode {
   RICH,
 }
 
+const allowedInlineTags = ['b', 'i', 'u', 'strikethrough', 'small']
+
 const htmlSanitizationSettings: {
   [mode in HtmlSanitizationMode]: SanitizationOptions
 } = {
@@ -17,11 +19,11 @@ const htmlSanitizationSettings: {
     allowedAttributes: [],
   },
   [HtmlSanitizationMode.INLINE]: {
-    allowedTags: ['b', 'i', 'u', 'strikethrough'],
+    allowedTags: allowedInlineTags,
     allowedAttributes: [],
   },
   [HtmlSanitizationMode.RICH]: {
-    allowedTags: ['b', 'i', 'u', 'strikethrough', 'br', 'small'],
+    allowedTags: [...allowedInlineTags, 'br', 'p'],
     allowedAttributes: [],
   },
 }

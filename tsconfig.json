@@ -20,17 +20,19 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "typeRoots": [
-      "./types"
+      "./types",
+      "./node_modules/@types"
     ],
     "sourceMap": true,
     "declaration": true,
     "types": [
-      "node"
+      "node",
+      "jest"
     ],
     "outDir": "dist/esm/",
-    "noEmit": false
+    "noEmit": true
   },
   "include": [
     "src",
@@ -38,7 +40,6 @@
   ],
   "exclude": [
     "node_modules",
-    "dist",
-    "demo"
+    "dist"
   ]
 }

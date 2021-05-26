@@ -4,7 +4,7 @@ import './styles.scss'
 
 import { DropdownOption } from './models'
 import { Option } from './option.view'
-import useClickOutside from '../utils/clickOutside.hook'
+import { useClickOutside } from '../utils/clickOutside.hook'
 
 type Props = {
   options: DropdownOption[]
