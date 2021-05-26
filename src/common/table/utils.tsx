@@ -12,7 +12,7 @@ import {
   TableColumn,
 } from './models'
 
-const EMPTY_CELL_TEXT = '-'
+export const EMPTY_CELL_TEXT = '-'
 
 export function getRelatedDataItem<T>(
   id: string,
@@ -40,17 +40,12 @@ export function renderCellContents<T>(
   const properEmptyText = isNumericType ? 0 : EMPTY_CELL_TEXT
 
   // Custom - columns do not use a propertyPath
-  // Same with numeric columns, using render
-  if (
-    columnDefinition.type === DataType.CUSTOM ||
-    (isNumericType && 'render' in columnDefinition)
-  ) {
+  if (columnDefinition.type === DataType.CUSTOM) {
     return columnDefinition.render(dataItem) || properEmptyText
   }
 
   // Everything else does though
-  // @ts-expect-error
-  const value = getNestedValue(dataItem, columnDefinition.propertyPath)
+  const value = getNestedValue(dataItem, columnDefinition.propertyPath as string)
 
   // Relation
   if (columnDefinition.type === DataType.RELATION) {
@@ -63,6 +58,7 @@ export function renderCellContents<T>(
     if (relatedDataItem) {
       return columnDefinition.render(relatedDataItem)
     }
+    return properEmptyText
   }
 
   // Date
