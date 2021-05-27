@@ -3,8 +3,15 @@ import { IdMapped } from '../models'
 import * as formatters from '../utils/formatting'
 import { HtmlSanitizationMode, sanitizeHtmlString } from '../utils/sanitization'
 import { DataType } from './enum'
-import { DateColumn, NumericColumn, RelationalColumn } from './models'
-import { EMPTY_CELL_TEXT, getRelatedDataItem, renderCellContents } from './utils'
+import { DateColumn, NumericColumn, RelationalColumn, TableColumn } from './models'
+import {
+  ABSOLUTE_MININMUM_COLUMN_WIDTH,
+  EMPTY_CELL_TEXT,
+  generateGridTemplateColumnSizes,
+  getCellProperties,
+  getRelatedDataItem,
+  renderCellContents,
+} from './utils'
 
 interface TestModel {
   a: string
@@ -293,6 +300,97 @@ describe('Table - Utils', () => {
         )
         expect(result).toEqual(0)
       })
+    })
+  })
+
+  describe('getCellProperties()', () => {
+    it('returns an object containing className = table-cell and an empty style obj', () => {
+      const result = getCellProperties(0, 0, [])
+      expect(result).toEqual({ className: 'table-cell', style: {} })
+    })
+
+    it("when the column is pinned, it returns the above, plus a 'pinned' classname and a style object with the 'left' property set to the relevant value in pinnedColumnWidths", () => {
+      const columnIndex = 1
+      const pinnedColumnWidths = [10, 20]
+      const result = getCellProperties(1, 2, pinnedColumnWidths)
+      expect(result).toEqual({
+        className: 'table-cell pinned',
+        style: { left: pinnedColumnWidths[columnIndex - 1] },
+      })
+    })
+  })
+
+  describe('generateGridTemplateColumnSizes()', () => {
+    const DEFAULT_SIZE = 'minmax(min-content, 1fr)'
+
+    it(`sets everything to ${DEFAULT_SIZE} by default`, () => {
+      const result = generateGridTemplateColumnSizes(
+        [
+          {} as unknown as TableColumn<TestModel>,
+          {} as unknown as TableColumn<TestModel>,
+          {} as unknown as TableColumn<TestModel>,
+        ],
+        {}
+      )
+      expect(result).toEqual(`${DEFAULT_SIZE} ${DEFAULT_SIZE} ${DEFAULT_SIZE}`)
+    })
+
+    it('uses any given defaultWidth values', () => {
+      const result = generateGridTemplateColumnSizes(
+        [
+          { defaultWidth: '100px' } as unknown as TableColumn<TestModel>,
+          {} as unknown as TableColumn<TestModel>,
+          { defaultWidth: '2fr' } as unknown as TableColumn<TestModel>,
+        ],
+        {}
+      )
+      expect(result).toEqual(`100px ${DEFAULT_SIZE} 2fr`)
+    })
+
+    it('if a column is resized, its resizeData is used over any default widths', () => {
+      const result = generateGridTemplateColumnSizes(
+        [
+          {
+            defaultWidth: '100px',
+            isResizable: true,
+          } as unknown as TableColumn<TestModel>,
+          {
+            defaultWidth: '80px',
+            isResizable: true,
+          } as unknown as TableColumn<TestModel>,
+          { defaultWidth: '2fr' } as unknown as TableColumn<TestModel>,
+        ],
+        {
+          0: {
+            startingWidth: 100,
+            delta: 50,
+          },
+        }
+      )
+      expect(result).toEqual(`150px 80px 2fr`)
+    })
+
+    it('if a resized column is under the abolute minimum width, that minimum is used instead', () => {
+      const result = generateGridTemplateColumnSizes(
+        [
+          {
+            defaultWidth: '100px',
+            isResizable: true,
+          } as unknown as TableColumn<TestModel>,
+          {
+            defaultWidth: '80px',
+            isResizable: true,
+          } as unknown as TableColumn<TestModel>,
+          { defaultWidth: '2fr' } as unknown as TableColumn<TestModel>,
+        ],
+        {
+          0: {
+            startingWidth: 100,
+            delta: -80,
+          },
+        }
+      )
+      expect(result).toEqual(`${ABSOLUTE_MININMUM_COLUMN_WIDTH}px 80px 2fr`)
     })
   })
 })

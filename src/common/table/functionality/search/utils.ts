@@ -1,6 +1,7 @@
 import { IdMapped } from '../../../models'
 import { formatDate } from '../../../utils/formatting'
 import { getNestedValue } from '../../../utils/general'
+import { HtmlSanitizationMode, sanitizeHtmlString } from '../../../utils/sanitization'
 import { DataType } from '../../enum'
 import { DateFormatter, TableColumn } from '../../models'
 import { getRelatedDataItem } from '../../utils'
@@ -41,7 +42,10 @@ export function searchTable<T>(
         } else if (c.type === DataType.DATE) {
           const formatter = dateFormatterOverride || formatDate
           const dateStr = formatter(data, !!c.showTime, !!c.showSeconds)
-          return dateStr.includes(cleanedSearchTerm)
+          return dateStr.toLowerCase().includes(cleanedSearchTerm)
+        } else if (c.type === DataType.RICH_TEXT) {
+          const plainText = sanitizeHtmlString(data, HtmlSanitizationMode.PLAIN)
+          return plainText.toLowerCase().includes(cleanedSearchTerm)
         } else if ((data as string).toLowerCase().includes(cleanedSearchTerm)) {
           return true
         }
