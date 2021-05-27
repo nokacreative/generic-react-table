@@ -113,11 +113,12 @@ export function filter<T>(
               return cleanedDataValue.includes(cleanedFilterValue)
             }
           }
-          case DataType.COLOR:
+          case DataType.COLOR: {
             if (f.column.filterIsMultiple) {
               return (cleanedFilterValue as string[]).includes(dataValue)
             }
             return dataValue === cleanedFilterValue
+          }
           case DataType.RICH_TEXT:
             return sanitizeHtmlString(dataValue, HtmlSanitizationMode.PLAIN)
               .toLowerCase()
