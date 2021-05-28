@@ -163,7 +163,7 @@ export interface FilterMessageOverrides {
   togglerButtonTooltip?: string
   clearButtonTooltip?: string
   placeholders?: FilterPlaceholderMessageOverrides
-  datePicker: {
+  datePicker?: {
     dateFormat?: string
     timeFormat?: (withSeconds: boolean) => string
     locale?: string

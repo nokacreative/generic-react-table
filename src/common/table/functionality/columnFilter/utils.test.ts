@@ -1,7 +1,16 @@
-import { CustomFilterType, DataType, FilterType } from '../../enum'
-import { filter } from './utils'
+import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 
-const setFilteredData = jest.fn()
+import { CustomFilterType, DataType, FilterType } from '../../enum'
+import {
+  FilterMessageOverrides,
+  FilterPlaceholderMessageOverrides,
+  NumericColumn,
+  TableColumn,
+  TextColumn,
+} from '../../models'
+import { FilterMap } from './models'
+import { filter, generateFilter } from './utils'
 
 describe('Table Functionality - Filter - Utils', () => {
   afterEach(() => {
@@ -9,6 +18,8 @@ describe('Table Functionality - Filter - Utils', () => {
   })
 
   describe('filter()', () => {
+    const setFilteredData = jest.fn()
+
     describe('PLAIN_TEXT columns', () => {
       it('PARTIAL_MATCH works and is case-insensitive', () => {
         const data = [{ a: 'asdf' }, { a: 'PASD' }, { a: 'b' }]
@@ -509,6 +520,328 @@ describe('Table Functionality - Filter - Utils', () => {
         )
         expect(setFilteredData).toHaveBeenCalledWith([data[0], data[1]])
         expect(matcher).toHaveBeenCalledWith(10, 20, data[0], undefined)
+      })
+    })
+  })
+
+  describe('generateFilter()', () => {
+    const setCurrentFilters = jest.fn()
+    const setShowFilterBackdrop = jest.fn()
+
+    describe('PLAIN_TEXT columns', () => {
+      function generateElement(
+        extraColumnConfig: Partial<TextColumn<any>>,
+        messageOverrides?: FilterMessageOverrides,
+        currentFilters: FilterMap<any> = {}
+      ) {
+        const fullColumn: TextColumn<any> = {
+          type: DataType.PLAIN_TEXT,
+          propertyPath: 'a',
+          headerText: 'A',
+          ...extraColumnConfig,
+        }
+        const result = generateFilter(
+          fullColumn,
+          0,
+          currentFilters,
+          setCurrentFilters,
+          [],
+          setShowFilterBackdrop,
+          messageOverrides
+        )
+        const element = render(result as JSX.Element).getByRole('textbox')
+        return { element, column: fullColumn }
+      }
+
+      it("returns an input with the placeholder as 'Exact' when the filter type is EXACT_MATCH", () => {
+        const { element } = generateElement({ filterType: FilterType.EXACT_MATCH })
+        expect(element.getAttribute('placeholder')).toEqual('Exact')
+      })
+
+      it("returns an input with the placeholder as 'Contains' when the filter type is PARTIAL_MATCH", () => {
+        const { element } = generateElement({ filterType: FilterType.PARTIAL_MATCH })
+        expect(element.getAttribute('placeholder')).toEqual('Contains')
+      })
+
+      it('returns an input with the placeholder set to the given override when the filter type is PARTIAL_MATCH', () => {
+        const placeholderOverride = 'asdf'
+        const { element } = generateElement(
+          { filterType: FilterType.PARTIAL_MATCH },
+          { placeholders: { partialMatch: placeholderOverride } }
+        )
+        expect(element.getAttribute('placeholder')).toEqual(placeholderOverride)
+      })
+
+      it('returns an input with the placeholder set to the given override when the filter type is EXACT_MATCH', () => {
+        const placeholderOverride = 'asdf'
+        const { element } = generateElement(
+          { filterType: FilterType.EXACT_MATCH },
+          { placeholders: { exactMatch: placeholderOverride } }
+        )
+        expect(element.getAttribute('placeholder')).toEqual(placeholderOverride)
+      })
+
+      it('returns an input with the value set to an empty string when there is no corresponding current filter', () => {
+        const { element } = generateElement(
+          { filterType: FilterType.PARTIAL_MATCH },
+          undefined,
+          {}
+        )
+        expect(element.getAttribute('value')).toEqual('')
+      })
+
+      it("returns an input with the value set to the corresponding current filter's value when it exists", () => {
+        const column: TableColumn<any> = {
+          type: DataType.PLAIN_TEXT,
+          propertyPath: 'a',
+          headerText: 'A',
+          filterType: FilterType.EXACT_MATCH,
+        }
+        const filterValue = 'asdfg'
+        const { element } = generateElement(column, undefined, {
+          0: {
+            column,
+            value: filterValue,
+          },
+        })
+        expect(element.getAttribute('value')).toEqual(filterValue)
+      })
+
+      it("onChange, the input's value is added to the current filters", () => {
+        const inputValue = 'a'
+        const currentFilters: FilterMap<any> = {
+          1: {
+            column: {} as unknown as TableColumn<any>,
+            value: 'asdf',
+          },
+        }
+        const { element, column } = generateElement({}, undefined, currentFilters)
+        userEvent.type(element, inputValue)
+        expect(setCurrentFilters).toHaveBeenCalledWith({
+          ...currentFilters,
+          0: { column, value: inputValue },
+        })
+      })
+
+      it("onChange, if the input's value is empty, it is removed from the current filters", () => {
+        const currentFilters: FilterMap<any> = {
+          1: {
+            column: {} as unknown as TableColumn<any>,
+            value: 'asdf',
+          },
+          0: {
+            column: {} as unknown as TableColumn<any>,
+            value: 'asdf',
+          },
+        }
+        const { element } = generateElement({}, undefined, currentFilters)
+        userEvent.clear(element)
+        expect(setCurrentFilters).toHaveBeenCalledWith({ 1: currentFilters[1] })
+      })
+    })
+
+    describe('NUMBER columns', () => {
+      function generateElement(
+        extraColumnConfig: Partial<NumericColumn<any>>,
+        messageOverrides?: FilterMessageOverrides,
+        currentFilters: FilterMap<any> = {}
+      ) {
+        const fullColumn: NumericColumn<any> = {
+          type: DataType.NUMBER,
+          propertyPath: 'a',
+          headerText: 'A',
+          ...extraColumnConfig,
+        }
+        const result = generateFilter(
+          fullColumn,
+          0,
+          currentFilters,
+          setCurrentFilters,
+          [],
+          setShowFilterBackdrop,
+          messageOverrides
+        )
+        const element = render(result as JSX.Element)
+        return {
+          element:
+            fullColumn.filterType === FilterType.RANGED
+              ? element.getAllByRole('spinbutton')
+              : element.getByRole('spinbutton'),
+          column: fullColumn,
+        }
+      }
+
+      function expectPlaceholder(
+        filterType: Exclude<FilterType, FilterType.PARTIAL_MATCH>,
+        expectedPlaceholder: string | { from: string; to: string },
+        placeholderOverrides?: FilterPlaceholderMessageOverrides
+      ) {
+        const { element } = generateElement(
+          { filterType },
+          placeholderOverrides ? { placeholders: placeholderOverrides } : undefined
+        )
+        if (typeof expectedPlaceholder === 'string') {
+          expect((element as HTMLElement).getAttribute('placeholder')).toEqual(
+            expectedPlaceholder
+          )
+        } else {
+          const elements = element as HTMLElement[]
+          expect(elements[0].getAttribute('placeholder')).toEqual(
+            expectedPlaceholder.from
+          )
+          expect(elements[1].getAttribute('placeholder')).toEqual(expectedPlaceholder.to)
+        }
+      }
+
+      describe('returns a single numeric input with proper default placeholders', () => {
+        it("'Exactly' when the filter type is EXACT_MATCH", () =>
+          expectPlaceholder(FilterType.EXACT_MATCH, 'Exactly'))
+        it("'At most'when the filter type is MAXIMUM", () =>
+          expectPlaceholder(FilterType.MAXIMUM, 'At most'))
+        it("'At least' when the filter type is MINIMUM", () =>
+          expectPlaceholder(FilterType.MINIMUM, 'At least'))
+      })
+
+      describe('returns a single numeric input with the placeholder overrides', () => {
+        it('EXACT_MATCH', () =>
+          expectPlaceholder(FilterType.EXACT_MATCH, 'asdf', { numericExact: 'asdf' }))
+        it('MINIMUM', () =>
+          expectPlaceholder(FilterType.MINIMUM, 'asdf', { numericMin: 'asdf' }))
+        it('MAXIMUM', () =>
+          expectPlaceholder(FilterType.MAXIMUM, 'asdf', { numericMax: 'asdf' }))
+      })
+
+      it("sets the input's value to an empty string when there is no corresponding current filter", () => {
+        const { element } = generateElement(
+          { filterType: FilterType.EXACT_MATCH },
+          undefined,
+          {}
+        )
+        expect((element as HTMLElement).getAttribute('value')).toEqual('')
+      })
+
+      it("sets the input's value to the corresponding current filter's value when it exists", () => {
+        const filterValue = 'asdf'
+        const { element } = generateElement(
+          { filterType: FilterType.EXACT_MATCH },
+          undefined,
+          {
+            0: {
+              column: {} as unknown as TableColumn<any>,
+              value: filterValue,
+            },
+          }
+        )
+        expect((element as HTMLElement).getAttribute('value')).toEqual(filterValue)
+      })
+
+      it("onChange, it parses the input's value as a float, and adds it to the current filters list", () => {
+        const inputValue = '1.5'
+        const currentFilters: FilterMap<any> = {
+          1: {
+            column: {} as unknown as TableColumn<any>,
+            value: 'asdf',
+          },
+        }
+        const { element, column } = generateElement({}, undefined, currentFilters)
+        userEvent.type(element as HTMLElement, inputValue)
+        expect(setCurrentFilters).toHaveBeenCalledWith({
+          ...currentFilters,
+          0: { column, value: parseFloat(inputValue) },
+        })
+      })
+
+      it('onChange, it removes the filter when the input is cleared', () => {
+        const currentFilters: FilterMap<any> = {
+          1: {
+            column: {} as unknown as TableColumn<any>,
+            value: 'asdf',
+          },
+          0: {
+            column: {} as unknown as TableColumn<any>,
+            value: 100,
+          },
+        }
+        const { element } = generateElement({}, undefined, currentFilters)
+        userEvent.clear(element as HTMLElement)
+        expect(setCurrentFilters).toHaveBeenCalledWith({ 1: currentFilters[1] })
+      })
+
+      describe('Ranged numeric filters', () => {
+        it('has the correct default placeholders (Min and Max)', () => {
+          expectPlaceholder(FilterType.RANGED, { from: 'Min', to: 'Max' })
+        })
+
+        it('has the correct override placeholders', () => {
+          const expectedPlaceholders = { from: 'asdf', to: 'hfgdh' }
+          expectPlaceholder(FilterType.RANGED, expectedPlaceholders, {
+            numericRangeFrom: expectedPlaceholders.from,
+            numericRangeTo: expectedPlaceholders.to,
+          })
+        })
+
+        it("onChange of the min input, it sets the filter's min value and leaves the max alone", () => {
+          const inputValue = '5'
+          const currentFilters: FilterMap<any> = {
+            0: {
+              column: {} as unknown as TableColumn<any>,
+              value: { min: '', max: 80 },
+            },
+          }
+          const { element } = generateElement(
+            { filterType: FilterType.RANGED },
+            undefined,
+            currentFilters
+          )
+          userEvent.type((element as HTMLElement[])[0], inputValue)
+          expect(setCurrentFilters).toHaveBeenCalledWith({
+            0: {
+              column: {},
+              value: { min: parseFloat(inputValue), max: 80 },
+            },
+          })
+        })
+
+        it("onChange of the max input, it sets the filter's max value and leaves the min alone", () => {
+          const inputValue = '100'
+          const currentFilters: FilterMap<any> = {
+            0: {
+              column: {} as unknown as TableColumn<any>,
+              value: { min: 5, max: 80 },
+            },
+          }
+          const { element } = generateElement(
+            { filterType: FilterType.RANGED },
+            undefined,
+            currentFilters
+          )
+          const maxInput = (element as HTMLElement[])[1]
+          userEvent.clear(maxInput)
+          userEvent.type(maxInput, inputValue)
+          expect(setCurrentFilters).toHaveBeenCalledWith({
+            0: {
+              column: {},
+              value: { min: 5, max: parseFloat(inputValue) },
+            },
+          })
+        })
+
+        it('onChange, if both min and max values are empty strings, the filter is removed', () => {
+          const currentFilters: FilterMap<any> = {
+            0: {
+              column: {} as unknown as TableColumn<any>,
+              value: { min: '', max: 80 },
+            },
+          }
+          const { element } = generateElement(
+            { filterType: FilterType.RANGED },
+            undefined,
+            currentFilters
+          )
+          const maxInput = (element as HTMLElement[])[1]
+          userEvent.clear(maxInput)
+          expect(setCurrentFilters).toHaveBeenCalledWith({})
+        })
       })
     })
   })
