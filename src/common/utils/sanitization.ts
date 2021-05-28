@@ -9,23 +9,45 @@ export enum HtmlSanitizationMode {
   RICH,
 }
 
+const allowedInlineTags = [
+  'b',
+  'i',
+  'u',
+  'strikethrough',
+  'strong',
+  'small',
+  'em',
+  'mark',
+  'ins',
+  'del',
+  'sub',
+  'sup',
+]
+
 const htmlSanitizationSettings: {
   [mode in HtmlSanitizationMode]: SanitizationOptions
 } = {
   [HtmlSanitizationMode.PLAIN]: {
     allowedTags: [],
-    allowedAttributes: [],
+    allowedAttributes: {},
   },
   [HtmlSanitizationMode.INLINE]: {
-    allowedTags: ['b', 'i', 'u', 'strikethrough'],
-    allowedAttributes: [],
+    allowedTags: allowedInlineTags,
+    allowedAttributes: {},
   },
   [HtmlSanitizationMode.RICH]: {
-    allowedTags: ['b', 'i', 'u', 'strikethrough', 'br', 'small'],
-    allowedAttributes: [],
+    allowedTags: [...allowedInlineTags, 'br', 'p'],
+    allowedAttributes: {},
   },
 }
 
 export function sanitizeHtmlString(html: string, mode: HtmlSanitizationMode) {
   return sanitizeHtml(html, htmlSanitizationSettings[mode])
+}
+
+export function sanitizeHtmlStringWithCustomOptions(
+  html: string,
+  customOptions: SanitizationOptions
+) {
+  return sanitizeHtml(html, customOptions)
 }

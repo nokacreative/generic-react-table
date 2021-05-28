@@ -1,4 +1,4 @@
-@import 'assets/vars.scss';
+@import '../../assets/mixins.scss';
 
 .dropdown-wrapper {
   position: relative;
@@ -13,7 +13,7 @@
 
   &.active {
     .dropdown-input {
-      border-color: $tertiary;
+      border-color: var(--active);
     }
 
     & > .dropdown-arrow {
@@ -24,7 +24,7 @@
 
   & > .dropdown-clear {
     position: absolute;
-    color: $text;
+    color: var(--text);
     right: 15px;
     font-weight: 500;
     font-size: 1.2em;
@@ -32,7 +32,7 @@
   }
 
   & > .dropdown-arrow {
-    @include triangle($text, 10px);
+    @include triangle(var(--text), 10px);
     transform: rotate(180deg);
     position: absolute;
     top: 12px;
@@ -45,7 +45,7 @@
   }
 
   .options-container {
-    border: 1px solid $tertiary;
+    border: 1px solid var(--active);
     overflow-y: auto;
     position: absolute;
     width: 100%;
@@ -53,21 +53,22 @@
     background: white;
     margin-top: -1px;
     z-index: 1;
+    background: var(--cellBg);
 
     .pinned-value-separator {
-      border-bottom: 1px dashed $separatorColor;
+      border-bottom: 1px dashed var(--separator);
     }
   }
 
   .dropdown-option {
     padding: 0.1em 0.5em;
     font-weight: 400;
-    color: $text;
+    color: var(--text);
 
     &:hover,
     &.selected,
     &.hovered {
-      background: $tertiary;
+      background: var(--active);
     }
   }
 

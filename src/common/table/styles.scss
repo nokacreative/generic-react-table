@@ -1,8 +1,8 @@
-@import './vars.scss';
+@import '../../assets/mixins.scss';
 
 .table-main {
   width: 100%;
-  border: 1px solid $separatorColor;
+  border: 1px solid var(--separator);
   overflow-x: auto;
   position: relative;
 
@@ -22,23 +22,23 @@
     position: relative;
 
     &:nth-child(even) .table-cell {
-      background-color: #f7f5f5;
+      background-color: var(--alternateCellBg);
     }
 
     &.selected .table-cell {
-      background-color: $activeColor !important;
+      background-color: var(--active) !important;
       font-weight: 500;
 
       a {
-        color: $primaryDark;
+        color: var(--linksDark);
       }
     }
   }
 
   .table-header-cell-wrapper {
-    border-bottom: 1px solid $separatorColor;
-    background: $headerColor;
-    color: white;
+    border-bottom: 1px solid var(--separator);
+    background: var(--headerCellBg);
+    color: var(--headerCellText);
     font-weight: 700;
     transition: opacity 0.3s;
   }
@@ -78,7 +78,7 @@
           &::before,
           &::after {
             content: '';
-            @include triangle(white, 15px);
+            @include triangle(var(--headerCellText), 15px);
             position: absolute;
           }
           &::before {
@@ -92,7 +92,7 @@
 
         &.asc,
         &.desc {
-          @include triangle(white, 15px);
+          @include triangle(var(--headerCellText), 15px);
         }
         &.desc {
           transform: rotate(180deg);
@@ -116,7 +116,8 @@
     position: relative;
 
     &:not(.table-header-cell-wrapper) {
-      background: white;
+      background: var(--cellBg);
+      color: var(--text);
     }
 
     & > .color-box {
@@ -127,7 +128,7 @@
 
     &.pinned {
       position: sticky;
-      border-right: 1px solid $separatorColor;
+      border-right: 1px solid var(--separator);
       height: 100%;
       z-index: 1;
     }
@@ -138,7 +139,7 @@
       transition: background 0.3s ease-out;
     }
     &:hover .table-cell {
-      background: rgba(255, 153, 51, 0.3);
+      background: var(--rowHover);
     }
   }
 }
@@ -167,7 +168,7 @@
 
   & > .table-header {
     .table-name {
-      color: $header;
+      color: var(--headerText);
       text-transform: uppercase;
       font-weight: 800;
     }
@@ -182,7 +183,7 @@
       .icon path,
       ellipse,
       line {
-        stroke: $text;
+        stroke: var(--textAgainstNoBg);
       }
 
       & > *:not(:last-child) {
@@ -208,4 +209,6 @@
 
 .table-message {
   padding: 0.5rem 1rem;
+  background: var(--cellBg);
+  color: var(--text)
 }

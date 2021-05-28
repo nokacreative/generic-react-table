@@ -1,3 +1,5 @@
+import { SanitizationOptions } from 'sanitize-html-react'
+
 import { DropdownOption } from '../dropdown'
 import { IdMapped } from '../models'
 import { CustomFilterType, DataType, FilterType, SortDirection } from './enum'
@@ -24,6 +26,8 @@ export interface TextColumn<T> extends TableColumnBaseWithPath<T> {
 
 export interface RichTextColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.RICH_TEXT
+  disallowLineBreaks?: boolean
+  sanitizationOptions?: SanitizationOptions
 }
 
 export interface ColorColumn<T> extends TableColumnBaseWithPath<T> {
@@ -87,18 +91,11 @@ export interface RelationalColumn<T> extends TableColumnBaseWithPath<T> {
   filter?: CustomFilter<T>
 }
 
-interface NumericColumnBase<T> extends TableColumnBase<T> {
+export interface NumericColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.NUMBER | DataType.MONEY
   filterType?: Exclude<FilterType, FilterType.PARTIAL_MATCH>
 }
 
-export type NumericColumn<T> = NumericColumnBase<T> &
-  (
-    | {
-        render: (data: T) => number
-      }
-    | { propertyPath: keyof T }
-  )
 export type TableColumn<T> =
   | TextColumn<T>
   | RichTextColumn<T>
@@ -122,4 +119,57 @@ export interface ColumnResizeData {
 
 export type ReorderableColumn<T> = TableColumn<T> & {
   reorderProps: any
+}
+
+export type DateFormatter = (
+  timeValue: number,
+  showTime: boolean,
+  showSeconds: boolean
+) => string
+export type MoneyFormatter = (value: number) => string
+
+export interface MessageOverrides {
+  noData?: (pluralEntityName?: string) => string
+  noFilterResults?: string
+  noSearchResults?: string
+  xResults?: (x: number, pluralEntityName?: string) => string
+  showingXofYResults?: (x: number, y: number, pluralEntityName?: string) => string
+  resultsFilteredFrom?: (from: number, pluralEntityName?: string) => string
+  filters?: FilterMessageOverrides
+  searchTogglerButton?: string
+}
+
+export interface FormatterOverrides {
+  date?: DateFormatter
+  money?: MoneyFormatter
+}
+
+export interface FilterPlaceholderMessageOverrides {
+  genericFilter?: string
+  exactMatch?: string
+  partialMatch?: string
+  dateRangeFrom?: string
+  dateRangeTo?: string
+  dateExact?: string
+  dateMin?: string
+  dateMax?: string
+  numericExact?: string
+  numericMin?: string
+  numericMax?: string
+  numericRangeFrom?: string
+  numericRangeTo?: string
+  dropdownSingle?: string
+  dropdownMultiple?: string
+}
+
+export interface FilterMessageOverrides {
+  moneySymbol?: string
+  togglerButtonTooltip?: string
+  clearButtonTooltip?: string
+  placeholders?: FilterPlaceholderMessageOverrides
+  datePicker?: {
+    dateFormat?: string
+    timeFormat?: (withSeconds: boolean) => string
+    locale?: string
+  }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export default function useClickOutside(
+export function useClickOutside(
   isActive: boolean,
   onClickOutside: () => void,
   manualAvoidClasses?: string[]

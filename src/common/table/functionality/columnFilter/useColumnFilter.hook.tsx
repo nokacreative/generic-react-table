@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import './styles.scss'
 
 import { Icon, Icons } from '../../../icon'
-import { TableColumn } from '../../models'
+import { FilterMessageOverrides, TableColumn } from '../../models'
 import { filter, generateFilter } from './utils'
 import { debounce, objectIsEmpty } from '../../../utils/general'
 import { FilterMap } from './models'
@@ -16,7 +16,8 @@ export function useColumnFiltering<T>(
   debounceMilis: number,
   isServerSide: boolean,
   onFilter: ((currentFilters: FilterMap<T>) => void) | undefined,
-  cachedRelatedDataItems: IdMapped<any>
+  cachedRelatedDataItems: IdMapped<any>,
+  messageOverrides: FilterMessageOverrides | undefined
 ) {
   const [showFilters, setShowFilters] = useState<boolean>(false)
   const [filteredData, setFilteredData] = useState<T[]>(fullDataSet)
@@ -55,7 +56,8 @@ export function useColumnFiltering<T>(
                 currentFilters,
                 setCurrentFilters,
                 fullDataSet,
-                setShowFilterBackdrop
+                setShowFilterBackdrop,
+                messageOverrides
               )}
             </div>
           ))
@@ -71,13 +73,13 @@ export function useColumnFiltering<T>(
         <>
           <Icon
             icon={Icons.Filter}
-            tooltip="Filter"
+            tooltip={messageOverrides?.togglerButtonTooltip || 'Filter'}
             onClick={() => setShowFilters(!showFilters)}
           />
           {filtersExist && (
             <Icon
               icon={Icons.FilterClear}
-              tooltip="Clear All Filters"
+              tooltip={messageOverrides?.clearButtonTooltip || 'Clear All Filters'}
               onClick={() => setCurrentFilters({})}
             />
           )}

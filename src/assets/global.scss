@@ -1,0 +1,31 @@
+.noka-table-colors {
+  --text: #505050;
+  --headerText: #777777;
+  --links: #1abc9c;
+  --linksDark: #008066;
+  --active: #ff9933;
+
+  --cellBg: white;
+  --alternateCellBg: #f7f5f5;
+  --headerCellBg: #bc451a;
+  --headerCellText: white;
+  --rowHover: #ffd6ad;
+  --separator: #b39f98;
+
+  --textAgainstNoBg: var(--text);
+  --inputBg: var(--cellBg);
+  --inputText: var(--text);
+
+  input {
+    width: 100%;
+    font-family: inherit;
+    border: 1px solid var(--separator);
+    background: var(--inputBg);
+    color: var(--inputText);
+
+    &:active,
+    &:focus {
+      outline: 1px solid var(--active);
+    }
+  }
+}

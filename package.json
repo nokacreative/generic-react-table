@@ -1,23 +1,23 @@
 {
-  "name": "@noka/generic-react-table",
+  "name": "@nokacreative/generic-react-table",
   "description": "A generic table made in react.",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "private": false,
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
   "keywords": [
-    "noka",
+    "nokacreative",
     "react",
     "table",
     "generic"
   ],
-  "repository": "nokacreative/noka-generic-react-table",
+  "repository": "nokacreative/generic-react-table",
   "license": "MIT",
   "dependencies": {
-    "react-scripts": "4.0.3",
     "node-sass": "^5.0.0",
     "react-datepicker": "^3.8.0",
+    "react-scripts": "4.0.3",
     "sanitize-html-react": "^1.13.0"
   },
   "peerDependencies": {
@@ -25,6 +25,13 @@
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/react-hooks": "^7.0.0",
+    "@testing-library/user-event": "^13.1.9",
+    "@types/enzyme": "^3.10.8",
+    "@types/enzyme-adapter-react-16": "^1.0.6",
+    "@types/jest": "^26.0.23",
     "@types/node": "^15.3.0",
     "@types/react": "^17.0.0",
     "@types/react-datepicker": "^3.1.8",
@@ -32,8 +39,12 @@
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "copyfiles": "^2.4.1",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.6",
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
     "typescript": "^4.1.2"
   },
@@ -44,7 +55,8 @@
     "clean": "rimraf dist/",
     "copy:esm": "copyfiles -u 1 src/**/*.svg src/**/*.scss src/common/**/*.scss src/common/table/functionality/**/*.scss dist/esm",
     "copy:cjs": "copyfiles -u 1 src/**/*.svg src/**/*.scss src/common/**/*.scss src/common/table/functionality/**/*.scss dist/cjs",
-    "check": "tsc --noEmit true"
+    "check": "tsc --noEmit true",
+    "test": "react-scripts test --passWithNoTests"
   },
   "eslintConfig": {
     "extends": [
@@ -64,5 +76,7 @@
       "last 1 safari version"
     ]
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }

@@ -3,11 +3,20 @@ import React from 'react'
 import { IdMapped } from '../models'
 import { formatDate, formatMoney } from '../utils/formatting'
 import { getNestedValue } from '../utils/general'
-import { HtmlSanitizationMode, sanitizeHtmlString } from '../utils/sanitization'
+import {
+  HtmlSanitizationMode,
+  sanitizeHtmlString,
+  sanitizeHtmlStringWithCustomOptions,
+} from '../utils/sanitization'
 import { DataType } from './enum'
-import { ColumnResizeData, RelationalColumn, TableColumn } from './models'
+import {
+  ColumnResizeData,
+  FormatterOverrides,
+  RelationalColumn,
+  TableColumn,
+} from './models'
 
-const EMPTY_CELL_TEXT = '-'
+export const EMPTY_CELL_TEXT = '-'
 
 export function getRelatedDataItem<T>(
   id: string,
@@ -27,24 +36,20 @@ export function getRelatedDataItem<T>(
 export function renderCellContents<T>(
   columnDefinition: TableColumn<T>,
   dataItem: T,
-  cachedRelatedDataItems: IdMapped<any>
+  cachedRelatedDataItems: IdMapped<any>,
+  formatterOverrides: FormatterOverrides | undefined
 ) {
   const isNumericType =
     columnDefinition.type === DataType.NUMBER || columnDefinition.type === DataType.MONEY
   const properEmptyText = isNumericType ? 0 : EMPTY_CELL_TEXT
 
   // Custom - columns do not use a propertyPath
-  // Same with numeric columns, using render
-  if (
-    columnDefinition.type === DataType.CUSTOM ||
-    (isNumericType && 'render' in columnDefinition)
-  ) {
+  if (columnDefinition.type === DataType.CUSTOM) {
     return columnDefinition.render(dataItem) || properEmptyText
   }
 
   // Everything else does though
-  // @ts-expect-error
-  const value = getNestedValue(dataItem, columnDefinition.propertyPath)
+  const value = getNestedValue(dataItem, columnDefinition.propertyPath as string)
 
   // Relation
   if (columnDefinition.type === DataType.RELATION) {
@@ -57,22 +62,32 @@ export function renderCellContents<T>(
     if (relatedDataItem) {
       return columnDefinition.render(relatedDataItem)
     }
+    return properEmptyText
   }
 
   // Date
   else if (columnDefinition.type === DataType.DATE) {
-    return formatDate(value, !!columnDefinition.showTime, !!columnDefinition.showSeconds)
+    const formatter = formatterOverrides?.date || formatDate
+    return formatter(value, !!columnDefinition.showTime, !!columnDefinition.showSeconds)
   }
 
   // Rich text
   else if (value && columnDefinition.type === DataType.RICH_TEXT) {
+    const html = value as unknown as string
     return (
       <div
         dangerouslySetInnerHTML={{
-          __html: sanitizeHtmlString(
-            value as unknown as string,
-            HtmlSanitizationMode.RICH
-          ),
+          __html: columnDefinition.sanitizationOptions
+            ? sanitizeHtmlStringWithCustomOptions(
+                html,
+                columnDefinition.sanitizationOptions
+              )
+            : sanitizeHtmlString(
+                html,
+                columnDefinition.disallowLineBreaks
+                  ? HtmlSanitizationMode.INLINE
+                  : HtmlSanitizationMode.RICH
+              ),
         }}
       />
     )
@@ -92,6 +107,9 @@ export function renderCellContents<T>(
   // Money
   else if (columnDefinition.type === DataType.MONEY) {
     if (value) {
+      if (formatterOverrides?.money) {
+        return formatterOverrides.money(value)
+      }
       return `$${formatMoney(value)}`
     }
     return EMPTY_CELL_TEXT

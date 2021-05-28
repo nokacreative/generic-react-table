@@ -11,6 +11,8 @@ import {
   CustomFilter,
   CustomNumberFilter,
   DateColumn,
+  FilterMessageOverrides,
+  FilterPlaceholderMessageOverrides,
   NumericColumn,
   TableColumn,
 } from '../../models'
@@ -111,11 +113,12 @@ export function filter<T>(
               return cleanedDataValue.includes(cleanedFilterValue)
             }
           }
-          case DataType.COLOR:
+          case DataType.COLOR: {
             if (f.column.filterIsMultiple) {
               return (cleanedFilterValue as string[]).includes(dataValue)
             }
             return dataValue === cleanedFilterValue
+          }
           case DataType.RICH_TEXT:
             return sanitizeHtmlString(dataValue, HtmlSanitizationMode.PLAIN)
               .toLowerCase()
@@ -157,14 +160,17 @@ export function filter<T>(
   setFilteredData(filteredData)
 }
 
+interface Meta<T> {
+  column: TableColumn<T>
+  columnIndex: number
+  currentFilters: FilterMap<T>
+  setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
+  messageOverrides: FilterMessageOverrides | undefined
+}
+
 function addOrUpdateFilters<T>(
   filterValue: any,
-  meta: {
-    column: TableColumn<T>
-    columnIndex: number
-    currentFilters: FilterMap<T>
-    setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
-  },
+  meta: Meta<T>,
   customValue?: {
     defaultValue: any
     path: string
@@ -221,13 +227,9 @@ function addOrUpdateFilters<T>(
 }
 
 function generateRangedFilter<T>(
-  constantArgs: {
-    column: TableColumn<T>
-    columnIndex: number
-    currentFilters: FilterMap<T>
-    setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
-  },
-  extraClassName?: string
+  constantArgs: Meta<T>,
+  extraClassName?: string,
+  extraInputProps?: IdMapped<any>
 ) {
   const onChangeFunc =
     (extraValuePath: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -240,24 +242,27 @@ function generateRangedFilter<T>(
       })
     }
   const existingFilterValue = constantArgs.currentFilters[constantArgs.columnIndex]?.value
+  const placeholderOverrides = constantArgs.messageOverrides?.placeholders
   return (
     <RangedFilterWrapper
       fromFilter={
         <input
-          placeholder="Min"
+          placeholder={placeholderOverrides?.numericRangeFrom || 'Min'}
           type="number"
           onChange={onChangeFunc('min')}
           className={extraClassName}
           value={existingFilterValue?.min || ''}
+          {...(extraInputProps || {})}
         />
       }
       toFilter={
         <input
-          placeholder="Max"
+          placeholder={placeholderOverrides?.numericRangeTo || 'Max'}
           type="number"
           onChange={onChangeFunc('max')}
           className={extraClassName}
           value={existingFilterValue?.max || ''}
+          {...(extraInputProps || {})}
         />
       }
     />
@@ -269,30 +274,30 @@ type FilterTypeWithPlaceholderText = Exclude<
   FilterType.PARTIAL_MATCH | FilterType.RANGED
 >
 
-const NUMERIC_PLACEHOLDER_TEXT_BY_TYPE: {
+const NUMERIC_PLACEHOLDER_TEXT_BY_TYPE = (
+  placeholderOverrides: FilterPlaceholderMessageOverrides | undefined
+): {
   [key in FilterTypeWithPlaceholderText]: string
-} = {
-  [FilterType.EXACT_MATCH]: 'Exactly',
-  [FilterType.MAXIMUM]: 'At most',
-  [FilterType.MINIMUM]: 'At least',
-}
+} => ({
+  [FilterType.EXACT_MATCH]: placeholderOverrides?.numericExact || 'Exactly',
+  [FilterType.MAXIMUM]: placeholderOverrides?.numericMax || 'At most',
+  [FilterType.MINIMUM]: placeholderOverrides?.numericMin || 'At least',
+})
 
-const DATE_PLACEHOLDER_TEXT_BY_TYPE: {
+const DATE_PLACEHOLDER_TEXT_BY_TYPE = (
+  placeholderOverrides: FilterPlaceholderMessageOverrides | undefined
+): {
   [key in FilterTypeWithPlaceholderText]: string
-} = {
-  [FilterType.EXACT_MATCH]: 'Exactly',
-  [FilterType.MAXIMUM]: 'Until',
-  [FilterType.MINIMUM]: 'From',
-}
+} => ({
+  [FilterType.EXACT_MATCH]: placeholderOverrides?.dateExact || 'Exactly',
+  [FilterType.MAXIMUM]: placeholderOverrides?.dateMax || 'Until',
+  [FilterType.MINIMUM]: placeholderOverrides?.dateMin || 'From',
+})
 
 function generateNumericFilter<T>(
-  constantArgs: {
-    column: TableColumn<T>
-    columnIndex: number
-    currentFilters: FilterMap<T>
-    setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
-  },
-  extraClassName?: string
+  constantArgs: Meta<T>,
+  extraClassName?: string,
+  extraInputProps?: IdMapped<any>
 ) {
   const { column } = constantArgs
   const isNumericColumn =
@@ -308,15 +313,16 @@ function generateNumericFilter<T>(
       return generateRangedFilter(constantArgs, extraClassName)
     }
   }
+  const placeholderOverrides = constantArgs.messageOverrides?.placeholders
   return (
     <div className={extraClassName}>
       <input
         placeholder={
           isNumericColumn
-            ? NUMERIC_PLACEHOLDER_TEXT_BY_TYPE[
+            ? NUMERIC_PLACEHOLDER_TEXT_BY_TYPE(placeholderOverrides)[
                 (column as NumericColumn<T>).filterType as FilterTypeWithPlaceholderText
               ]
-            : 'Filter'
+            : placeholderOverrides?.genericFilter || 'Filter'
         }
         type="number"
         onChange={(e) => {
@@ -324,24 +330,21 @@ function generateNumericFilter<T>(
           addOrUpdateFilters(Number.isNaN(numericValue) ? '' : numericValue, constantArgs)
         }}
         value={constantArgs.currentFilters[constantArgs.columnIndex]?.value || ''}
+        {...(extraInputProps || {})}
       />
     </div>
   )
 }
 
 function generateDropdownFilter<T>(
-  constantArgs: {
-    column: TableColumn<T>
-    columnIndex: number
-    currentFilters: FilterMap<T>
-    setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
-  },
+  constantArgs: Meta<T>,
   setShowFilterBackdrop: React.Dispatch<React.SetStateAction<boolean>>,
   options: DropdownOption[],
   id: string,
   isMultiple?: boolean
 ) {
   const shouldPop = options.length >= 5
+  const placeholderOverrides = constantArgs.messageOverrides?.placeholders
   return (
     <Dropdown
       options={options}
@@ -358,7 +361,11 @@ function generateDropdownFilter<T>(
               addOrUpdateFilters(options ? options.map((o) => o.value) : '', constantArgs)
       }
       id={`table-color-filter-dropdown-${id}`}
-      placeholder={isMultiple ? 'Multiple' : 'Filter'}
+      placeholder={
+        isMultiple
+          ? placeholderOverrides?.dropdownMultiple || 'Multiple'
+          : placeholderOverrides?.dropdownSingle || 'Filter'
+      }
       saveSelection
       showClearButton
       isMultiple={isMultiple}
@@ -371,32 +378,46 @@ function generateDropdownFilter<T>(
 }
 
 function generateDateFilter<T>(
-  constantArgs: {
-    column: DateColumn<T>
-    columnIndex: number
-    currentFilters: FilterMap<T>
-    setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>
-  },
+  constantArgs: Meta<T>,
   existingFilter: Filter<T> | undefined,
   setShowFilterBackdrop: React.Dispatch<React.SetStateAction<boolean>>,
   isRanged: boolean,
   rangedPart?: 'from' | 'to'
 ) {
+  const column = constantArgs.column as DateColumn<T>
   const defaultValue: Date | null | RangedDateFilterValue = isRanged
     ? { from: null, to: null }
     : null
+
+  const messageOverrides = constantArgs.messageOverrides
+  const placeholderOverrides = messageOverrides?.placeholders
+
   const placeholder = (() => {
     if (isRanged) {
+      if (placeholderOverrides) {
+        if (rangedPart === 'from' && placeholderOverrides.dateRangeFrom)
+          return placeholderOverrides.dateRangeFrom
+        else if (rangedPart === 'to' && placeholderOverrides.dateRangeTo)
+          return placeholderOverrides.dateRangeTo
+      }
       return `${rangedPart?.slice(0, 1).toUpperCase()}${rangedPart?.slice(1)}`
-    } else if (constantArgs.column.filterType) {
-      return DATE_PLACEHOLDER_TEXT_BY_TYPE[
-        constantArgs.column.filterType as FilterTypeWithPlaceholderText
+    } else if (column.filterType) {
+      return DATE_PLACEHOLDER_TEXT_BY_TYPE(placeholderOverrides)[
+        column.filterType as FilterTypeWithPlaceholderText
       ]
     }
-    return 'Filter'
+    return placeholderOverrides?.genericFilter || 'Filter'
   })()
-  const showTime = constantArgs.column.showTime
-  const timeFormat = constantArgs.column.showSeconds ? 'hh:mm:ss a' : 'hh:mm a'
+
+  const datePickerOverrides = messageOverrides?.datePicker
+  const dateFormat = datePickerOverrides?.dateFormat || 'MM/dd/yyyy'
+  const showTime = column.showTime
+  const timeFormat = datePickerOverrides?.timeFormat
+    ? datePickerOverrides.timeFormat(!!column.showSeconds)
+    : column.showSeconds
+    ? 'hh:mm:ss a'
+    : 'hh:mm a'
+
   return (
     <DatePicker
       selected={(() => {
@@ -420,12 +441,13 @@ function generateDateFilter<T>(
       showTimeSelect={showTime}
       showTimeInput={showTime}
       placeholderText={placeholder}
-      dateFormat={showTime ? `MM/dd/yyyy ${timeFormat}` : 'MM/dd/yyyy'}
+      dateFormat={showTime ? `${dateFormat} ${timeFormat}` : dateFormat}
       timeFormat={timeFormat}
       isClearable
       popperClassName="table-date-picker-popup"
       onCalendarOpen={() => setShowFilterBackdrop(true)}
       onCalendarClose={() => setShowFilterBackdrop(false)}
+      locale={datePickerOverrides?.locale}
     />
   )
 }
@@ -436,17 +458,25 @@ export function generateFilter<T>(
   currentFilters: FilterMap<T>,
   setCurrentFilters: React.Dispatch<React.SetStateAction<FilterMap<T>>>,
   fullDataSet: T[],
-  setShowFilterBackdrop: React.Dispatch<React.SetStateAction<boolean>>
+  setShowFilterBackdrop: React.Dispatch<React.SetStateAction<boolean>>,
+  messageOverrides: FilterMessageOverrides | undefined
 ) {
-  const constantArgs = { column, columnIndex, currentFilters, setCurrentFilters }
+  const constantArgs: Meta<T> = {
+    column,
+    columnIndex,
+    currentFilters,
+    setCurrentFilters,
+    messageOverrides,
+  }
   if (column.type === DataType.PLAIN_TEXT || column.type === DataType.RICH_TEXT) {
+    const placeholderOverrides = constantArgs.messageOverrides?.placeholders
     return (
       <input
         placeholder={
           column.type === DataType.PLAIN_TEXT &&
           column.filterType === FilterType.EXACT_MATCH
-            ? 'Exact'
-            : 'Contains'
+            ? placeholderOverrides?.exactMatch || 'Exact'
+            : placeholderOverrides?.partialMatch || 'Contains'
         }
         onChange={(e) => addOrUpdateFilters(e.target.value, constantArgs)}
         value={currentFilters[columnIndex]?.value || ''}
@@ -454,18 +484,21 @@ export function generateFilter<T>(
     )
   }
   if (column.type === DataType.NUMBER || column.type === DataType.MONEY) {
+    const isMoneyType = column.type === DataType.MONEY
     return generateNumericFilter(
       constantArgs,
-      column.type === DataType.MONEY ? 'money' : undefined
+      isMoneyType ? 'money' : undefined,
+      isMoneyType && messageOverrides?.moneySymbol
+        ? { 'data-moneySymbol': messageOverrides.moneySymbol }
+        : undefined
     )
   }
   if (column.type === DataType.DATE) {
     const isRanged = column.filterType === FilterType.RANGED
     const existingFilter: Filter<T> = currentFilters[columnIndex]
-    const typedConstantArgs = { ...constantArgs, column }
     if (!isRanged) {
       return generateDateFilter(
-        typedConstantArgs,
+        constantArgs,
         existingFilter,
         setShowFilterBackdrop,
         false
@@ -474,14 +507,14 @@ export function generateFilter<T>(
       return (
         <RangedFilterWrapper
           fromFilter={generateDateFilter(
-            typedConstantArgs,
+            constantArgs,
             existingFilter,
             setShowFilterBackdrop,
             true,
             'from'
           )}
           toFilter={generateDateFilter(
-            typedConstantArgs,
+            constantArgs,
             existingFilter,
             setShowFilterBackdrop,
             true,

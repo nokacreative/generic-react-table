@@ -1,5 +1,3 @@
-@import '../../vars.scss';
-
 .table-action-search {
   transition: all 0.3s;
   overflow: hidden;
@@ -24,18 +22,18 @@
       font-size: 2rem;
       position: absolute;
       right: 0;
-      color: $header;
+      color: var(--headerText);
       cursor: default;
 
       &:hover {
-        color: $text;
+        color: var(--text);
       }
     }
   }
 
   .table-search-input {
     border: none;
-    border-bottom: 3px solid $primary;
+    border-bottom: 3px solid var(--links);
     background: none;
     padding: 0.2rem;
     padding-left: 24px;
@@ -46,7 +44,7 @@
     &:focus,
     &:active {
       outline: none;
-      border-bottom-color: $activeColor;
+      border-bottom-color: var(--active);
     }
   }
 }
