@@ -407,6 +407,42 @@ To see the full list of overridable properties, see the "Text Overrides" section
 
 [react-datepicker](https://www.npmjs.com/package/react-datepicker) is used for the Datepicker. Thus, other than setting the locale in the overrides as written above, changing its locale contains a bit more steps; refer to the Localization section of the linked package to see how it's done.
 
+### Rich-Text Configurations
+
+![Rich-Text Configurations](https://user-images.githubusercontent.com/6403562/119938031-c307e080-bf59-11eb-959f-c36e937ea31c.png)
+
+Rich text columns sanitize using a specific whitelist of formatting tags + `<br>` and `<p>` by default. You can override this behaviour in a variety of ways, such as disallowing line-breaks, setting your own sanitization options, or transforming specific tags into others. Below are some sample column definitions (with all non-relevant properties stripped out):
+
+```
+{
+  headerText: 'No Line-breaks',
+  disallowLineBreaks: true,
+},
+{
+  headerText: 'Custom (only <b> allowed)',
+  sanitizationOptions: {
+    allowedTags: ['b'],
+  },
+},
+{
+  headerText: 'Custom (spans with class attribute allowed)',
+  sanitizationOptions: {
+    allowedTags: ['span'],
+    allowedAttributes: {
+      span: ['class'],
+    },
+  },
+},
+{
+  headerText: 'Custom (transform <b> into <i>)',
+  sanitizationOptions: {
+    transformTags: { b: 'i' },
+  },
+}
+```
+
+To see the full list of options and their descriptions, refer to the "Rich Text Columns" sections in the API reference below.
+
 # Comprehensive API reference
 
 ## Common enums
@@ -522,9 +558,48 @@ All properties below are technically optional, but required if you want the spec
 
 ### Rich text columns
 
-| Property     | type   | Required | Description                                                                                                                                            |
-| ------------ | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| propertyPath | string | Y        | Where the property lies in your model. Ex. if you have `UserModel { bio: string }`, and you want an Bio column, you would write `propertyPath: 'bio'`. |
+| Property            | type    | Required | Description                                                                                                                                            |
+| ------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| propertyPath        | string  | Y        | Where the property lies in your model. Ex. if you have `UserModel { bio: string }`, and you want an Bio column, you would write `propertyPath: 'bio'`. |
+| disallowLineBreaks  | boolean | N        | Whether or not to remove line-breaks. False by default.                                                                                                |
+| sanitizationOptions | object  | N        | Custom options. Will completely override default sanitization options. The object definition and default values are listed below.                      |
+
+**Sanitization Options**
+
+| Property          | type                                      | Required | Default Value                                                                                     | Description                                                                                       |
+| ----------------- | ----------------------------------------- | -------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| allowedTags       | string[]                                  | Y        | `[ 'b', 'i', 'u', 'strikethrough', 'strong', 'small', 'em', 'mark', 'ins', 'del', 'sub', 'sup' ]` | A whitelist of allowed HTML tags. Everything else will be removed.                                |
+| allowedAttributes | { [tag: string]: string[] }               | N        | {}                                                                                                | A whitelist of all allowed attributes, per-tag.                                                   |
+| transformTags     | { [tag: string]: string &#124; Function } | N        | {}                                                                                                | Specify tags to transform from and to, ex. `{ b: 'i' }` will turn all `<b>` tags into `<i>` ones. |
+
+The function signature for `transformTags` is as follows:
+
+```
+(
+  tagName: string,
+  attribs: { [attr: string]: string }
+) => {
+  tagName: string;
+  attribs: { [attr: string]: string }
+}
+
+// Ex.
+{
+  transformTags: {
+    ol: (tagName: string, attribs: { [attr: string]: string }) => {
+      // do stuff
+      return {
+        tagName: 'ul',
+        attribs: {
+          class: 'foo'
+        }
+      }
+    }
+  }
+}
+```
+
+You can also refer to the [sanitize-html-react](https://www.npmjs.com/package/sanitize-html-react) documentation to see usage samples.
 
 ### Number and Money columns
 

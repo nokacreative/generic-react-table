@@ -3,7 +3,11 @@ import React from 'react'
 import { IdMapped } from '../models'
 import { formatDate, formatMoney } from '../utils/formatting'
 import { getNestedValue } from '../utils/general'
-import { HtmlSanitizationMode, sanitizeHtmlString } from '../utils/sanitization'
+import {
+  HtmlSanitizationMode,
+  sanitizeHtmlString,
+  sanitizeHtmlStringWithCustomOptions,
+} from '../utils/sanitization'
 import { DataType } from './enum'
 import {
   ColumnResizeData,
@@ -69,13 +73,21 @@ export function renderCellContents<T>(
 
   // Rich text
   else if (value && columnDefinition.type === DataType.RICH_TEXT) {
+    const html = value as unknown as string
     return (
       <div
         dangerouslySetInnerHTML={{
-          __html: sanitizeHtmlString(
-            value as unknown as string,
-            HtmlSanitizationMode.RICH
-          ),
+          __html: columnDefinition.sanitizationOptions
+            ? sanitizeHtmlStringWithCustomOptions(
+                html,
+                columnDefinition.sanitizationOptions
+              )
+            : sanitizeHtmlString(
+                html,
+                columnDefinition.disallowLineBreaks
+                  ? HtmlSanitizationMode.INLINE
+                  : HtmlSanitizationMode.RICH
+              ),
         }}
       />
     )

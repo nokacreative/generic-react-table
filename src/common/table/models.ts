@@ -1,3 +1,5 @@
+import { SanitizationOptions } from 'sanitize-html-react'
+
 import { DropdownOption } from '../dropdown'
 import { IdMapped } from '../models'
 import { CustomFilterType, DataType, FilterType, SortDirection } from './enum'
@@ -24,6 +26,8 @@ export interface TextColumn<T> extends TableColumnBaseWithPath<T> {
 
 export interface RichTextColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.RICH_TEXT
+  disallowLineBreaks?: boolean
+  sanitizationOptions?: SanitizationOptions
 }
 
 export interface ColorColumn<T> extends TableColumnBaseWithPath<T> {
