@@ -210,6 +210,27 @@ function onMultipleSelections(_: UserModel, allSelections: UserModel[]) {
 />
 ```
 
+### Row Reordering
+
+![Row Reordering](https://user-images.githubusercontent.com/6403562/120148971-06ab5600-c1b7-11eb-8d13-4fe07e0bd817.png)
+
+Row orders are persisted through paging, sorting, and filtering.
+
+A move indicator is automatically added to each cell in the first column. A callback function can optionally be passed in for when a row is reordered.
+
+```
+function onRowReordred(row: ProductModel, fromIndex: number, toIndex: number) {
+  ...
+}
+
+<Table
+  columns={columns}
+  data={products}
+  useRowReordering
+  onRowReordered={onRowReordred}
+/>
+```
+
 ### Server-side Paging and Sorting
 
 The necessary properties are `useServerSidePaging` and `onPage()`, and `useServerSideSorting` and `onSort()`. `totalNumPages` and `totalNumResults` must also be passed in when using server-side paging.
@@ -523,6 +544,13 @@ All properties below are technically optional, but required if you want the spec
 | -------------- | ----------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------- |
 | onRowSelected  | (row: T, allSelections: T[], isDeselected: boolean) => void | Y        | What to do when a row has been selected. `allSelections` will be empty if only single selections are supported. |
 | keepSelections | boolean                                                     | N        | Whether or not to keep selections, eg. allow multiple selections. False by default.                             |
+
+### Row reordering
+
+| Property         | type                                                       | Required | Description                                            |
+| ---------------- | ---------------------------------------------------------- | -------- | ------------------------------------------------------ |
+| useRowReordering | boolean                                                    | Y        | Whether or not to enable row reordering.               |
+| onRowReordered   | (row: T, fromRowIndex: number, toRowIndex: number) => void | N        | A callback function for when a row has been reordered. |
 
 ### Searching
 

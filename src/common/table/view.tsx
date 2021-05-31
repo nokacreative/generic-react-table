@@ -16,6 +16,8 @@ import { useSearch } from './functionality/search/useSearch.hook'
 import { useColumnFiltering } from './functionality/columnFilter'
 import { Props, checkProps } from './props'
 import { IdMapped } from '../models'
+import { useRowReorder } from './functionality/useRowReorder.hook'
+import { Icon, Icons } from '../icon'
 
 const DEFAULT_DEBOUNCE_MILIS = 200
 
@@ -24,8 +26,14 @@ export function Table<T>(props: Props<T>) {
     checkProps(props)
   }, [props])
 
-  const { sortedData, sortByColumn, currentSortingRules } = useSort(
+  const orderedData = useRowReorder(
+    !!props.useRowReordering,
     props.data,
+    props.useRowReordering ? props.onRowReordered : undefined
+  )
+
+  const { sortedData, sortByColumn, currentSortingRules } = useSort(
+    orderedData,
     props.columns,
     !!props.canSortMultipleColumns,
     !!props.useServerSideSorting,
@@ -281,8 +289,13 @@ export function Table<T>(props: Props<T>) {
                     }
                   }
                 }}
+                {...('reorderProps' in d
+                  ? // @ts-expect-error
+                    d.reorderProps.row
+                  : {})}
               >
                 {columns.map((c, columnIndex) => {
+                  const isFirstColumn = columnIndex === 0
                   return (
                     <td
                       {...getCellProperties(
@@ -292,6 +305,17 @@ export function Table<T>(props: Props<T>) {
                       )}
                       key={`table-row-${rowIndex}-cell-${columnIndex}`}
                     >
+                      {isFirstColumn && props.useRowReordering && (
+                        <div
+                          className="row-move-indicator"
+                          {...(isFirstColumn && 'reorderProps' in d
+                            ? // @ts-expect-error
+                              d.reorderProps.indicator
+                            : {})}
+                        >
+                          <Icon icon={Icons.Move} tooltip="Drag" />
+                        </div>
+                      )}
                       {renderCellContents(
                         c,
                         d,

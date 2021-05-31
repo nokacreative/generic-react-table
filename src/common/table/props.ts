@@ -89,12 +89,22 @@ type FilteringProps<T> =
       onFilter: (currentFilters: FilterMap<T>) => void
     }
 
+type RowReorderingProps<T> =
+  | {
+      useRowReordering?: never
+    }
+  | {
+      useRowReordering?: true
+      onRowReordered?: (row: T, fromRowIndex: number, toRowIndex: number) => void
+    }
+
 export type Props<T> = BaseProps<T> &
   PagingProps &
   ServerSidePagingProps &
   ServerSideSortingProps<T> &
   SearchingProps &
-  FilteringProps<T>
+  FilteringProps<T> &
+  RowReorderingProps<T>
 
 export function checkProps<T>(props: Props<T>) {
   if (
@@ -103,6 +113,12 @@ export function checkProps<T>(props: Props<T>) {
   ) {
     throw new Error(
       'totalNumResults must be given when using server side searching, filtering, or paging.'
+    )
+  }
+
+  if (props.useRowReordering && props.columns.some((c) => c.isSortable)) {
+    throw new Error(
+      'Row ordering cannot be used in tandem with sorting. Either remove useRowReordering from the table, or remove isSortable from all columns.'
     )
   }
 
