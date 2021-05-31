@@ -34,6 +34,7 @@ export interface RichTextColumn<T> extends TableColumnBaseWithPath<T> {
 
 export interface ColorColumn<T> extends TableColumnBaseWithPath<T> {
   type: DataType.COLOR
+  showText?: boolean
   filterIsMultiple?: boolean
 }
 

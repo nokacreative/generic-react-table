@@ -95,12 +95,20 @@ export function renderCellContents<T>(
 
   // Colour
   else if (value && columnDefinition.type === DataType.COLOR) {
-    return (
+    const colorBox = (
       <div
         className="color-box"
         style={{ backgroundColor: value as any }}
         title={value}
       />
+    )
+    return columnDefinition.showText ? (
+      <div className="color-cell-wrapper">
+        {colorBox}
+        {value}
+      </div>
+    ) : (
+      colorBox
     )
   }
 

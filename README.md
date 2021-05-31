@@ -624,6 +624,7 @@ You can also refer to the [sanitize-html-react](https://www.npmjs.com/package/sa
 | ---------------- | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | propertyPath     | string  | Y        | Where the property lies in your model.                                                                                                                           |
 | filterIsMultiple | boolean | N        | Only used if `isFilterable` is set to `true` in the Table component. Defaults to false. Determines whether or not multiple selections can be made in the filter. |
+| showText         | boolean | N        | Whether or not to show the text value of the colour (ex. `red` or `#FF0000`), as opposed to just the colour itself. False by default.                            |
 
 ### Relation columns
 

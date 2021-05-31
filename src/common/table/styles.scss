@@ -120,10 +120,20 @@
       color: var(--text);
     }
 
-    & > .color-box {
+    .color-box {
       width: 28px;
       height: 28px;
       margin: 0 auto;
+    }
+
+    .color-cell-wrapper {
+      display: flex;
+
+      .color-box {
+        margin: 0;
+        margin-right: 10px;
+        flex-shrink: 0;
+      }
     }
 
     &.pinned {
@@ -210,5 +220,5 @@
 .table-message {
   padding: 0.5rem 1rem;
   background: var(--cellBg);
-  color: var(--text)
+  color: var(--text);
 }

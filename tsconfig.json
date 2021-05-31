@@ -31,8 +31,7 @@
       "node",
       "jest"
     ],
-    "outDir": "dist/esm/",
-    "noEmit": true
+    "outDir": "dist/esm/"
   },
   "include": [
     "src",
