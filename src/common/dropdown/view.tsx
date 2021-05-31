@@ -32,6 +32,7 @@ type Props = {
   extraClassName?: string
   onOpen?: () => void
   onClose?: () => void
+  emptyOptionsText?: string
 }
 
 export function Dropdown(props: Props) {
@@ -137,16 +138,20 @@ export function Dropdown(props: Props) {
       prevConfigOptions.current = configOptions
       return
     }
-    if (prevConfigOptions.current.length === configOptions.length) {
-      return
-    }
+
+    // Ensure that options changed before proceeding
     if (
+      prevConfigOptions.current.length === configOptions.length &&
       prevConfigOptions.current.every(
         (o, i) => o.value === configOptions[i].value && o.text === configOptions[i].text
       )
     ) {
       return
     }
+
+    prevConfigOptions.current = configOptions
+
+    // Select default option in new options list
     const option = configOptions.find((o) => o.value === props.defaultValue)
     if (option !== undefined) {
       selectOption(option)
@@ -318,6 +323,9 @@ export function Dropdown(props: Props) {
               ))}
               <div className="pinned-value-separator" />
             </>
+          )}
+          {filteredOptions.length === 0 && (
+            <div className="dropdown-option">{props.emptyOptionsText || '(Empty)'}</div>
           )}
           {filteredOptions.map((o, i) => (
             <Option

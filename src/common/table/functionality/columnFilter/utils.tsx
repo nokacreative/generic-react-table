@@ -373,6 +373,7 @@ function generateDropdownFilter<T>(
       onOpen={shouldPop ? () => setShowFilterBackdrop(true) : undefined}
       onClose={shouldPop ? () => setShowFilterBackdrop(false) : undefined}
       defaultValue={constantArgs.currentFilters[constantArgs.columnIndex]?.value}
+      emptyOptionsText={constantArgs.messageOverrides?.emptyDropdown}
     />
   )
 }

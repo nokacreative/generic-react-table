@@ -724,6 +724,7 @@ Everything is optional.
 | clearButtonTooltip   | string | Clear All Filters | The tooltip that pops up when you hover over the Clear-Filter icon in the table's header. |
 | placeholders         | object | -                 | See the section below.                                                                    |
 | datePicker           | object | -                 | See the second section below.                                                             |
+| emptyDropdown        | string | (Empty)           | Used when a dropdown filter has no options.                                               |
 
 ### Filter Placeholders
 

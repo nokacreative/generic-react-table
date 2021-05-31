@@ -176,4 +176,5 @@ export interface FilterMessageOverrides {
     timeFormat?: (withSeconds: boolean) => string
     locale?: string
   }
+  emptyDropdown?: string
 }
