@@ -1,3 +1,5 @@
+import React from 'react'
+
 import { FormatterOverrides, MessageOverrides, SortingRule, TableColumn } from './models'
 import { FilterMap } from './functionality/columnFilter'
 import { DataType } from './enum'
@@ -24,6 +26,13 @@ type BaseProps<T> = {
   className?: string
   messageOverrides?: MessageOverrides
   formatterOverrides?: FormatterOverrides
+  headerCellTemplate?: (
+    headerText: string,
+    columnDefinition: TableColumn<T>,
+    sortIndicator: JSX.Element | undefined,
+    onSort: (() => void) | undefined,
+    filter: JSX.Element | undefined
+  ) => JSX.Element
 }
 
 type PagingProps =

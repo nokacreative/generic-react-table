@@ -179,6 +179,23 @@ export function Table<T>(props: Props<T>) {
               if (c.isSortable) cellClassNames.push('sortable')
               if (props.canReorderColumns && i >= numPinnedColumns)
                 cellClassNames.push('reorderable')
+              const sortIndicator = (() => {
+                if (relevantSortingRule) {
+                  return (
+                    <span
+                      className={`sort-indicator ${
+                        relevantSortingRule.direction === SortDirection.ASCENDING
+                          ? 'asc'
+                          : 'desc'
+                      }`}
+                    />
+                  )
+                }
+                if (c.isSortable) {
+                  return <span className="sort-indicator none" />
+                }
+              })()
+              const onSort = c.isSortable ? () => sortByColumn(c) : undefined
               return (
                 <th
                   className={wrapperClassNames}
@@ -189,22 +206,23 @@ export function Table<T>(props: Props<T>) {
                     {...(props.canReorderColumns ? c.reorderProps : {})}
                     className={cellClassNames.join(' ')}
                   >
-                    <div onClick={c.isSortable ? () => sortByColumn(c) : undefined}>
-                      {c.headerText}
-                      {relevantSortingRule && (
-                        <span
-                          className={`sort-indicator ${
-                            relevantSortingRule.direction === SortDirection.ASCENDING
-                              ? 'asc'
-                              : 'desc'
-                          }`}
-                        />
-                      )}
-                      {!relevantSortingRule && c.isSortable && (
-                        <span className="sort-indicator none" />
-                      )}
-                    </div>
-                    {columnFilters && columnFilters[i]}
+                    {props.headerCellTemplate ? (
+                      props.headerCellTemplate(
+                        c.headerText,
+                        c,
+                        sortIndicator,
+                        onSort,
+                        columnFilters ? columnFilters[i] : undefined
+                      )
+                    ) : (
+                      <>
+                        <div onClick={onSort}>
+                          {c.headerText}
+                          {sortIndicator}
+                        </div>
+                        {columnFilters && columnFilters[i]}
+                      </>
+                    )}
                   </div>
                   {c.isResizable && (
                     <ColumnResizer

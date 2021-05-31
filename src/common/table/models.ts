@@ -1,5 +1,4 @@
-import { SanitizationOptions } from 'sanitize-html-react'
-
+import { SanitizationOptions } from '../models'
 import { DropdownOption } from '../dropdown'
 import { IdMapped } from '../models'
 import { CustomFilterType, DataType, FilterType, SortDirection } from './enum'

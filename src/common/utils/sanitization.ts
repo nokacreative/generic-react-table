@@ -1,4 +1,5 @@
-import sanitizeHtml, { SanitizationOptions } from 'sanitize-html-react'
+import sanitizeHtml from 'sanitize-html-react'
+import { SanitizationOptions } from '../models'
 
 export enum HtmlSanitizationMode {
   /** No HTML allowed */
@@ -49,5 +50,8 @@ export function sanitizeHtmlStringWithCustomOptions(
   html: string,
   customOptions: SanitizationOptions
 ) {
-  return sanitizeHtml(html, customOptions)
+  return sanitizeHtml(html, {
+    ...htmlSanitizationSettings[HtmlSanitizationMode.RICH],
+    customOptions,
+  })
 }

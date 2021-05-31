@@ -476,20 +476,33 @@ There's also a self-explanatory `SortDirection` enum that is referenced below, w
 
 ### Base
 
-| Property               | type             | Required                                                                                   | Description                                                                                                                            |
-| ---------------------- | ---------------- | ------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| columns                | TableColumn<T>[] | Y                                                                                          | The column definitions.                                                                                                                |
-| data                   | T[]              | Y                                                                                          | The data that the table is to render.                                                                                                  |
-| pluralEntityName       | string           | N                                                                                          | Ex. 'products', 'users', etc. Used in result messages, num selected messages, and when the table is empty (ex. "No items to display"). |
-| numPinnedColumns       | number           | N                                                                                          | The number of columns that should be pinned, if any.                                                                                   |
-| canReorderColumns      | boolean          | N                                                                                          | Whether or not columns can be reordered.                                                                                               |
-| minNumRows             | number           | N                                                                                          | The minimum number of rows the table must have.                                                                                        |
-| showResultCount        | boolean          | N                                                                                          | Whether or not to show the number of results in the table.                                                                             |
-| isLoading              | boolean          | N                                                                                          | Shows a loader if true.                                                                                                                |
-| loader                 | React.ReactNode  | N                                                                                          | Override the default loading text with a component.                                                                                    |
-| canSortMultipleColumns | boolean          | N                                                                                          | False by default.                                                                                                                      |
-| tableName              | string           | N                                                                                          | The name of the table. Displayed in the header, if given.                                                                              |
-| searchDebounceMilis    | number           | The number of miliseconds to debounce searching and filtering inputs with. 200 by default. |
+| Property               | type             | Required | Description                                                                                                                            |
+| ---------------------- | ---------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| columns                | TableColumn<T>[] | Y        | The column definitions.                                                                                                                |
+| data                   | T[]              | Y        | The data that the table is to render.                                                                                                  |
+| pluralEntityName       | string           | N        | Ex. 'products', 'users', etc. Used in result messages, num selected messages, and when the table is empty (ex. "No items to display"). |
+| numPinnedColumns       | number           | N        | The number of columns that should be pinned, if any.                                                                                   |
+| canReorderColumns      | boolean          | N        | Whether or not columns can be reordered.                                                                                               |
+| minNumRows             | number           | N        | The minimum number of rows the table must have.                                                                                        |
+| showResultCount        | boolean          | N        | Whether or not to show the number of results in the table.                                                                             |
+| isLoading              | boolean          | N        | Shows a loader if true.                                                                                                                |
+| loader                 | React.ReactNode  | N        | Override the default loading text with a component.                                                                                    |
+| canSortMultipleColumns | boolean          | N        | False by default.                                                                                                                      |
+| tableName              | string           | N        | The name of the table. Displayed in the header, if given.                                                                              |
+| searchDebounceMilis    | number           | N        | The number of miliseconds to debounce searching and filtering inputs with. 200 by default.                                             |
+| headerCellTemplate     | Function         | N        | A template to override the default rendering of the header cell with. (Check below for the function signature)                         |
+
+The function signature of `headerCellTemplate` is as such:
+
+```
+(
+  headerText: string,
+  columnDefinition: TableColumn<T>,
+  sortIndicator: JSX.Element | undefined,
+  onSort: (() => void) | undefined,
+  filter: JSX.Element | undefined
+) => JSX.Element
+```
 
 All properties below are technically optional, but required if you want the specific functionality defined by each header.
 
@@ -569,7 +582,7 @@ All properties below are technically optional, but required if you want the spec
 
 | Property          | type                                      | Required | Default Value                                                                                     | Description                                                                                       |
 | ----------------- | ----------------------------------------- | -------- | ------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| allowedTags       | string[]                                  | Y        | `[ 'b', 'i', 'u', 'strikethrough', 'strong', 'small', 'em', 'mark', 'ins', 'del', 'sub', 'sup' ]` | A whitelist of allowed HTML tags. Everything else will be removed.                                |
+| allowedTags       | string[]                                  | N        | `[ 'b', 'i', 'u', 'strikethrough', 'strong', 'small', 'em', 'mark', 'ins', 'del', 'sub', 'sup' ]` | A whitelist of allowed HTML tags. Everything else will be removed.                                |
 | allowedAttributes | { [tag: string]: string[] }               | N        | {}                                                                                                | A whitelist of all allowed attributes, per-tag.                                                   |
 | transformTags     | { [tag: string]: string &#124; Function } | N        | {}                                                                                                | Specify tags to transform from and to, ex. `{ b: 'i' }` will turn all `<b>` tags into `<i>` ones. |
 
