@@ -37,11 +37,11 @@ export function renderCellContents<T>(
   columnDefinition: TableColumn<T>,
   dataItem: T,
   cachedRelatedDataItems: IdMapped<any>,
-  formatterOverrides: FormatterOverrides | undefined
+  formatterOverrides: FormatterOverrides | undefined,
+  emptyCellTextOverride: string | undefined
 ) {
-  const isNumericType =
-    columnDefinition.type === DataType.NUMBER || columnDefinition.type === DataType.MONEY
-  const properEmptyText = isNumericType ? 0 : EMPTY_CELL_TEXT
+  const properEmptyText =
+    columnDefinition.emptyCellText || emptyCellTextOverride || EMPTY_CELL_TEXT
 
   // Custom - columns do not use a propertyPath
   if (columnDefinition.type === DataType.CUSTOM) {
@@ -112,7 +112,7 @@ export function renderCellContents<T>(
       }
       return `$${formatMoney(value)}`
     }
-    return EMPTY_CELL_TEXT
+    return properEmptyText
   }
 
   return value || properEmptyText

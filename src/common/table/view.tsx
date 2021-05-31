@@ -278,7 +278,8 @@ export function Table<T>(props: Props<T>) {
                         c,
                         d,
                         cachedRelatedDataItems.current,
-                        props.formatterOverrides
+                        props.formatterOverrides,
+                        props.messageOverrides?.emptyCell
                       )}
                       {c.isResizable && (
                         <ColumnResizer

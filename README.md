@@ -548,6 +548,7 @@ All properties below are technically optional, but required if you want the spec
 | sortAccessor         | (row: T) => any                         | N        | All column types (aside from `CUSTOM` and `RELATION`) sort based on their dataType by default. You can override this behaviour by returning the data you would instead like to sort by.                                                                    |
 | defaultSortDirection | `SortDirection`                         | N        | The direction to sort by, by default.                                                                                                                                                                                                                      |
 | searchMatcher        | (row: T, searchTerm: string) => boolean | N        | Like with the sortAccessor, all non-custom and non-relation columns have their own code for determining whether or not its data includes the search term. You can override this behaviour (or define it for custom/relational columns) with this function. |
+| emptyCellText        | string                                  | N        | What this specific column should display if there is no data. Is `-` by default, and can be overridden for the entire table with the `messageOverrides.emptyCellText` property.                                                                            |
 
 ### Plain text columns
 
@@ -701,16 +702,17 @@ Everything is optional.
 
 ### General Messages
 
-| Property            | type                                                        | Default value                                                    | Description                                                                         |
-| ------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| noData              | (pluralEntityName?: string) => string                       | No {pluralEntityName &#124;&#124; items} to display.             | For when there is no data passed into the table.                                    |
-| noFilterResults     | string                                                      | No results are available for the selected filters.               | -                                                                                   |
-| noSearchResults     | string                                                      | No results are available for the given search term.              | -                                                                                   |
-| xResults            | (x: number, pluralEntityName?: string) => string            | `x` {`pluralEntityName` &#124;&#124; results}                    | The number of results text at the bottom left corner of the table.                  |
-| showingXofYResults  | (x: number, y: number, pluralEntityName?: string) => string | Showing `x` out of `y` {`pluralEntityName` &#124;&#124; results} | Used when there is paging.                                                          |
-| resultsFilteredFrom | (from: number, pluralEntityName?: string) => string         | (Filtered from `from`)                                           | Used when there are filters. Appended to the end of either of the above texts.      |
-| filters             | object                                                      | -                                                                | See the section below.                                                              |
-| searchTogglerButton | string                                                      | Search                                                           | The tooltip that appears when you hover over the Search icon in the table's header. |
+| Property            | type                                                        | Default value                                                    | Description                                                                                                   |
+| ------------------- | ----------------------------------------------------------- | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| noData              | (pluralEntityName?: string) => string                       | No {pluralEntityName &#124;&#124; items} to display.             | For when there is no data passed into the table.                                                              |
+| noFilterResults     | string                                                      | No results are available for the selected filters.               | -                                                                                                             |
+| noSearchResults     | string                                                      | No results are available for the given search term.              | -                                                                                                             |
+| xResults            | (x: number, pluralEntityName?: string) => string            | `x` {`pluralEntityName` &#124;&#124; results}                    | The number of results text at the bottom left corner of the table.                                            |
+| showingXofYResults  | (x: number, y: number, pluralEntityName?: string) => string | Showing `x` out of `y` {`pluralEntityName` &#124;&#124; results} | Used when there is paging.                                                                                    |
+| resultsFilteredFrom | (from: number, pluralEntityName?: string) => string         | (Filtered from `from`)                                           | Used when there are filters. Appended to the end of either of the above texts.                                |
+| filters             | object                                                      | -                                                                | See the section below.                                                                                        |
+| searchTogglerButton | string                                                      | Search                                                           | The tooltip that appears when you hover over the Search icon in the table's header.                           |
+| emptyCell           | string                                                      | `-`                                                              | For when a cell is empty. Can be overridden for a specific column with the column's `emptyCellText` property. |
 
 ### Filter Messages/Text (General)
 

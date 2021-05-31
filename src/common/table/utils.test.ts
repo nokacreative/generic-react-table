@@ -87,6 +87,7 @@ describe('Table - Utils', () => {
           },
           dataItem,
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(renderFunc(dataItem))
@@ -107,6 +108,7 @@ describe('Table - Utils', () => {
           },
           dataItem,
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(renderFunc(expectedRelatedDataItem))
@@ -123,6 +125,7 @@ describe('Table - Utils', () => {
           },
           dataItem,
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(EMPTY_CELL_TEXT)
@@ -144,7 +147,7 @@ describe('Table - Utils', () => {
 
       it('calls formatDate() with the settings in the column definition', () => {
         const spy = jest.spyOn(formatters, 'formatDate')
-        const result = renderCellContents(column, data, {}, undefined)
+        const result = renderCellContents(column, data, {}, undefined, undefined)
         expect(spy).toHaveBeenCalledWith(
           data.timeValue,
           column.showTime,
@@ -158,7 +161,7 @@ describe('Table - Utils', () => {
       it('if a formatter override is given, that is called instead', () => {
         const spy = jest.spyOn(formatters, 'formatDate')
         const override = jest.fn().mockReturnValue('hurray')
-        const result = renderCellContents(column, data, {}, { date: override })
+        const result = renderCellContents(column, data, {}, { date: override }, undefined)
         expect(spy).not.toHaveBeenCalled()
         expect(override).toHaveBeenCalledWith(
           data.timeValue,
@@ -180,6 +183,7 @@ describe('Table - Utils', () => {
           },
           { a: htmlValue },
           {},
+          undefined,
           undefined
         )
         const x = shallow(result)
@@ -200,6 +204,7 @@ describe('Table - Utils', () => {
           },
           { a: colorValue },
           {},
+          undefined,
           undefined
         )
         const x = render(result)
@@ -220,13 +225,19 @@ describe('Table - Utils', () => {
       }
 
       it('returns the money value formatted and prefixed with a $ symbol', () => {
-        const result = renderCellContents(column, data, {}, undefined)
+        const result = renderCellContents(column, data, {}, undefined, undefined)
         expect(result).toEqual(`$${formatters.formatMoney(data.moneyValue)}`)
       })
 
       it('uses the formatter override instead, if given', () => {
         const override = (moneyValue: number) => `Hello ${moneyValue}`
-        const result = renderCellContents(column, data, {}, { money: override })
+        const result = renderCellContents(
+          column,
+          data,
+          {},
+          { money: override },
+          undefined
+        )
         expect(result).toEqual(override(data.moneyValue))
       })
 
@@ -236,6 +247,7 @@ describe('Table - Utils', () => {
           // @ts-expect-error
           { moneyValue: undefined },
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(EMPTY_CELL_TEXT)
@@ -252,6 +264,7 @@ describe('Table - Utils', () => {
           },
           dataItem,
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(dataItem.a)
@@ -266,6 +279,7 @@ describe('Table - Utils', () => {
           },
           { a: undefined },
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(EMPTY_CELL_TEXT)
@@ -282,12 +296,13 @@ describe('Table - Utils', () => {
           },
           dataItem,
           {},
+          undefined,
           undefined
         )
         expect(result).toEqual(dataItem.a)
       })
 
-      it('returns 0 otherwise', () => {
+      it('returns the empty text otherwise', () => {
         const result = renderCellContents(
           {
             propertyPath: 'a',
@@ -296,9 +311,61 @@ describe('Table - Utils', () => {
           },
           { a: undefined },
           {},
+          undefined,
           undefined
         )
-        expect(result).toEqual(0)
+        expect(result).toEqual(EMPTY_CELL_TEXT)
+      })
+    })
+
+    describe('Empty cell text', () => {
+      it('is the default EMPTY_CELL_TEXT constant if no overrides are given', () => {
+        const result = renderCellContents(
+          {
+            propertyPath: 'b',
+            headerText: 'Nonexistant',
+            type: DataType.PLAIN_TEXT,
+          },
+          dataItem,
+          {},
+          undefined,
+          undefined
+        )
+        expect(result).toEqual(EMPTY_CELL_TEXT)
+      })
+
+      it('is messageOverrides.emptyCellText, if given', () => {
+        const override = 'asdf'
+        const result = renderCellContents(
+          {
+            propertyPath: 'b',
+            headerText: 'Nonexistant',
+            type: DataType.PLAIN_TEXT,
+          },
+          dataItem,
+          {},
+          undefined,
+          override
+        )
+        expect(result).toEqual(override)
+      })
+
+      it("is the column's specific override, if given", () => {
+        const tableWideOverride = 'asdf'
+        const columnSpecificOverride = 'dfhsdfg'
+        const result = renderCellContents(
+          {
+            propertyPath: 'b',
+            headerText: 'Nonexistant',
+            type: DataType.PLAIN_TEXT,
+            emptyCellText: columnSpecificOverride,
+          },
+          dataItem,
+          {},
+          undefined,
+          tableWideOverride
+        )
+        expect(result).toEqual(columnSpecificOverride)
       })
     })
   })

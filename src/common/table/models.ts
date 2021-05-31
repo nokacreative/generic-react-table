@@ -13,6 +13,8 @@ interface TableColumnBase<T> {
   /** All GridLayout values are valid: px, fr, minmax(), etc. */
   defaultWidth?: string
   searchMatcher?: (row: T, searchTerm: string, relatedDataItem?: any) => boolean
+  /** Is '-' by default. Can be overridden for the whole table with messageOverrides.emptyCell; this override is column-specific. */
+  emptyCellText?: string
 }
 
 interface TableColumnBaseWithPath<T> extends TableColumnBase<T> {
@@ -137,6 +139,7 @@ export interface MessageOverrides {
   resultsFilteredFrom?: (from: number, pluralEntityName?: string) => string
   filters?: FilterMessageOverrides
   searchTogglerButton?: string
+  emptyCell?: string
 }
 
 export interface FormatterOverrides {
