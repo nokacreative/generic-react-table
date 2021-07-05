@@ -33,12 +33,13 @@ yarn add @nokacreative/generic-react-table
 2. Plug them and your data into `<Table>`
 
 ```
-import { Table } from '@noka/generic-react-table'
+import { Table, TableColumn, DataType } from '@nokacreative/generic-react-table'
 import { data } from './database'
 
-const columns: TableColumn<UserModel>[] => [
+const columns: TableColumn<UserModel>[] = [
   {
     headerText: 'Column 1',
+    propertyPath: 'column1',
     type: DataType.PLAIN_TEXT,
   }
 ]
