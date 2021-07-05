@@ -1,78 +1,80 @@
 @import '../../assets/mixins.scss';
 
-.dropdown-wrapper {
-  position: relative;
+.noka-table-colors {
+  .dropdown-wrapper {
+    position: relative;
 
-  .dropdown-input {
-    padding-right: 17px;
-
-    &.withClearButton {
-      padding-right: 26px;
-    }
-  }
-
-  &.active {
     .dropdown-input {
-      border-color: var(--active);
+      padding-right: 17px;
+
+      &.withClearButton {
+        padding-right: 26px;
+      }
+    }
+
+    &.active {
+      .dropdown-input {
+        border-color: var(--active);
+      }
+
+      & > .dropdown-arrow {
+        transform: none;
+        top: 10px;
+      }
+    }
+
+    & > .dropdown-clear {
+      position: absolute;
+      color: var(--text);
+      right: 15px;
+      font-weight: 500;
+      font-size: 1.2em;
+      cursor: default;
     }
 
     & > .dropdown-arrow {
-      transform: none;
-      top: 10px;
+      @include triangle(var(--text), 10px);
+      transform: rotate(180deg);
+      position: absolute;
+      top: 12px;
+      right: 4px;
+      pointer-events: none;
+
+      &.disabled {
+        opacity: 0.5;
+      }
     }
-  }
 
-  & > .dropdown-clear {
-    position: absolute;
-    color: var(--text);
-    right: 15px;
-    font-weight: 500;
-    font-size: 1.2em;
-    cursor: default;
-  }
+    .options-container {
+      border: 1px solid var(--active);
+      overflow-y: auto;
+      position: absolute;
+      width: 100%;
+      box-sizing: border-box;
+      background: white;
+      margin-top: -1px;
+      z-index: 1;
+      background: var(--cellBg);
 
-  & > .dropdown-arrow {
-    @include triangle(var(--text), 10px);
-    transform: rotate(180deg);
-    position: absolute;
-    top: 12px;
-    right: 4px;
-    pointer-events: none;
-
-    &.disabled {
-      opacity: 0.5;
+      .pinned-value-separator {
+        border-bottom: 1px dashed var(--separator);
+      }
     }
-  }
 
-  .options-container {
-    border: 1px solid var(--active);
-    overflow-y: auto;
-    position: absolute;
-    width: 100%;
-    box-sizing: border-box;
-    background: white;
-    margin-top: -1px;
-    z-index: 1;
-    background: var(--cellBg);
+    .dropdown-option {
+      padding: 0.1em 0.5em;
+      font-weight: 400;
+      color: var(--text);
 
-    .pinned-value-separator {
-      border-bottom: 1px dashed var(--separator);
+      &:hover,
+      &.selected,
+      &.hovered {
+        background: var(--active);
+      }
     }
-  }
 
-  .dropdown-option {
-    padding: 0.1em 0.5em;
-    font-weight: 400;
-    color: var(--text);
-
-    &:hover,
-    &.selected,
-    &.hovered {
-      background: var(--active);
+    &.unfilterable .dropdown-input {
+      cursor: default;
     }
-  }
-
-  &.unfilterable .dropdown-input {
-    cursor: default;
   }
 }
