@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 export function useClickOutside(
   isActive: boolean,
@@ -29,14 +29,17 @@ export function useClickOutside(
     }
   }
 
+  const keydownCallback = useCallback(onKeydown, [])
+  const clickCallback = useCallback(onDocumentClicked, [])
+
   function addListeners() {
-    document.addEventListener('keydown', onKeydown, true)
-    document.addEventListener('click', onDocumentClicked, true)
+    document.addEventListener('keydown', keydownCallback, true)
+    document.addEventListener('click', clickCallback, true)
   }
 
   function removeListeners() {
-    document.removeEventListener('keydown', onKeydown, true)
-    document.removeEventListener('click', onDocumentClicked, true)
+    document.removeEventListener('keydown', keydownCallback, true)
+    document.removeEventListener('click', clickCallback, true)
   }
 
   useEffect(() => {

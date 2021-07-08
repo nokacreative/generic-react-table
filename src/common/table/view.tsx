@@ -268,8 +268,10 @@ export function Table<T>(props: Props<T>) {
                   selectedRows.find((r) => r === d) ? 'selected' : ''
                 }`}
                 key={`table-row-${rowIndex}`}
-                onClick={() => {
+                onClick={(e) => {
                   if (props.onRowSelected) {
+                    const clickedNode = (e.target as HTMLElement).nodeName
+                    if (clickedNode !== 'TD' && clickedNode !== 'TR') return
                     if (props.keepSelections) {
                       const existingRowIndex = selectedRows.findIndex((r) => r === d)
                       if (existingRowIndex > -1) {
